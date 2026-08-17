@@ -58,17 +58,17 @@ This information can be difficult to monitor and interpret systematically, parti
 
 
 
-**\* How their coding performance is changing over time.**
+**\1. How their coding performance is changing over time.**
 
-**\* Which topics they are strong or weak in.**
+**\2. Which topics they are strong or weak in.**
 
-**\* How consistently they participate in contests.**
+**\3. How consistently they participate in contests.**
 
-**\* Which difficulty levels they are comfortable solving.**
+**\4. Which difficulty levels they are comfortable solving.**
 
-**\* Whether their performance is improving.**
+**\5. Whether their performance is improving.**
 
-**\* What areas they should focus on next.**
+**\6. What areas they should focus on next.**
 
 
 
@@ -132,13 +132,13 @@ Students preparing for:
 
 
 
-**\* Coding interviews**
+**\1. Coding interviews**
 
-**\* Software engineering placements**
+**\2. Software engineering placements**
 
-**\* Competitive programming contests**
+**\3. Competitive programming contests**
 
-**\* Technical assessments**
+**\4. Technical assessments**
 
 
 
@@ -250,31 +250,31 @@ The initial product is expected to include:
 
 
 
-**\* User registration and authentication**
+**\1. User registration and authentication**
 
-**\* User profile management**
+**\2. User profile management**
 
-**\* Competitive-programming profile integration**
+**\3. Competitive-programming profile integration**
 
-**\* Coding statistics**
+**\4. Coding statistics**
 
-**\* Contest history**
+**\5. Contest history**
 
-**\* Rating history**
+**\6. Rating history**
 
-**\* Problem-solving statistics**
+**\7. Problem-solving statistics**
 
-**\* Topic-based performance analysis**
+**\8. Topic-based performance analysis**
 
-**\* Difficulty-based analysis**
+**\9. Difficulty-based analysis**
 
-**\* Dashboard and data visualization**
+**\10.Dashboard and data visualization**
 
-**\* Personal goals**
+**\11.Personal goals**
 
-**\* Progress tracking**
+**\12.Progress tracking**
 
-**\* Interview preparation**
+**\13.Interview preparation**
 
 
 
