@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CodeTrack AI — Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+
+    <h1 class="text-2xl font-bold mb-6">CodeTrack AI Dashboard</h1>
+
+    <div class="grid grid-cols-3 gap-4 mb-8">
+        <div class="bg-white rounded-lg shadow p-5">
+            <p class="text-gray-500 text-sm">Current Rating</p>
+            <p id="current-rating" class="text-3xl font-bold">—</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-5">
+            <p class="text-gray-500 text-sm">Max Rating</p>
+            <p id="max-rating" class="text-3xl font-bold">—</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-5">
+            <p class="text-gray-500 text-sm">Problems Solved</p>
+            <p id="problems-solved" class="text-3xl font-bold">—</p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-5 mb-8">
+        <h2 class="text-lg font-semibold mb-4">Rating History</h2>
+        <canvas id="ratingChart" height="80"></canvas>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-5">
+        <h2 class="text-lg font-semibold mb-4">Topic-wise Weak Areas</h2>
+        <table class="w-full text-left text-sm">
+            <thead>
+                <tr class="border-b">
+                    <th class="py-2">Tag</th>
+                    <th class="py-2">Attempted</th>
+                    <th class="py-2">Solved</th>
+                    <th class="py-2">Solve Rate</th>
+                </tr>
+            </thead>
+            <tbody id="topics-body"></tbody>
+        </table>
+    </div>
+
+    <script src="{% static 'js/dashboard.js' %}"></script>
+</body>
+</html>
