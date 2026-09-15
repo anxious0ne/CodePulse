@@ -1,0 +1,544 @@
+Software Requirements Specification (SRS)
+Competitive Programming Tracker
+Document Version: 1.0  
+Status: Initial Draft  
+Project Stage: Requirements  
+Previous Stage: Discovery  
+Next Stage: Product Backlog
+---
+1. Introduction
+1.1 Purpose
+This document defines the software requirements for the Competitive Programming Tracker.
+The purpose of the system is to provide a centralized web application through which users can connect supported competitive-programming profiles, retrieve coding activity, monitor contest performance, analyze problem-solving progress, and track personal coding goals.
+This document establishes the functional and non-functional requirements that will guide the product backlog, system architecture, database design, development, and testing activities.
+---
+2. Product Description
+The Competitive Programming Tracker will be a full-stack web application designed primarily for students, competitive programmers, and coding-interview candidates.
+The application will collect relevant information from supported competitive-programming platforms and present the information through a centralized dashboard.
+The system will transform collected data into understandable statistics and visualizations that allow users to monitor their coding progress over time.
+The initial implementation will focus on:
+Web application development
+User authentication
+Profile management
+External API integration
+Data storage
+Data processing
+Performance analytics
+Data visualization
+Goal and progress tracking
+---
+3. Product Objectives
+The primary objectives are:
+OBJ-01 — Centralized Tracking
+Provide users with a single platform for viewing relevant competitive-programming information.
+OBJ-02 — Performance Monitoring
+Allow users to monitor their coding activity and performance over time.
+OBJ-03 — Statistical Analysis
+Provide meaningful statistics based on contests, submissions, problems, ratings, topics, and difficulty levels.
+OBJ-04 — Progress Visualization
+Present coding progress using understandable charts, graphs, and other visual elements.
+OBJ-05 — Goal Tracking
+Allow users to define personal coding goals and monitor their progress.
+OBJ-06 — Extensible Architecture
+Build the application using a modular architecture that allows additional coding platforms and functionality to be introduced later.
+---
+4. Stakeholders
+The primary stakeholders are:
+4.1 End Users
+Students, competitive programmers, and coding-interview candidates who use the platform to monitor their coding progress.
+4.2 Project Administrator
+The administrator responsible for managing users, platform content, and system-level operations.
+4.3 Project Development Team
+Developers responsible for designing, implementing, testing, deploying, and maintaining the application.
+---
+5. User Roles
+The system will initially contain three user roles.
+5.1 Guest
+A visitor who has not authenticated.
+Guest users can:
+View the public landing page.
+View general information about the application.
+Register for an account.
+Access the login page.
+Guest users cannot access personalized coding data.
+---
+5.2 Registered User
+An authenticated user.
+Registered users can:
+Manage their profile.
+Connect supported coding-platform accounts.
+Retrieve coding statistics.
+View contest history.
+View rating history.
+View problem-solving statistics.
+View performance analytics.
+Create and manage personal goals.
+Monitor progress.
+---
+5.3 Administrator
+An authorized system administrator.
+Administrators can:
+Manage registered users.
+View system information.
+Manage application content where applicable.
+Manage interview-preparation content if the module is enabled.
+Monitor system-level operations.
+---
+6. Functional Requirements
+Functional requirements define what the system must do.
+---
+6.1 User Registration
+FR-001
+The system shall allow a guest user to create an account.
+FR-002
+The registration process shall collect the minimum information required to create a user account.
+FR-003
+The system shall validate user-provided registration information.
+FR-004
+The system shall prevent creation of duplicate accounts according to the application's account-uniqueness rules.
+FR-005
+The system shall securely store user credentials.
+---
+7. User Authentication
+FR-006
+The system shall allow registered users to log in.
+FR-007
+The system shall validate authentication credentials before granting access to protected resources.
+FR-008
+The system shall allow authenticated users to log out.
+FR-009
+The system shall prevent unauthenticated users from accessing protected user information.
+FR-010
+The system shall provide appropriate authentication error messages.
+---
+8. User Profile Management
+FR-011
+The system shall provide each registered user with a profile.
+FR-012
+Users shall be able to view their profile information.
+FR-013
+Users shall be able to update permitted profile information.
+FR-014
+The system shall associate coding-platform profiles with the corresponding application user.
+---
+9. Coding Platform Integration
+The initial implementation will prioritize Codeforces because an official API is available and provides relevant user, contest, submission, and problem information.
+FR-015
+The system shall allow a registered user to provide a supported coding-platform username.
+FR-016
+The system shall validate whether the supplied username can be retrieved from the supported platform.
+FR-017
+The system shall retrieve available coding-profile information through the platform's API.
+FR-018
+The system shall retrieve available contest-related information.
+FR-019
+The system shall retrieve available submission/problem-related information.
+FR-020
+The system shall handle unsuccessful API requests without exposing internal system errors to the user.
+FR-021
+The system shall prevent unnecessary repeated requests to external APIs where appropriate.
+---
+10. Coding Profile Data
+The system shall maintain relevant information associated with a user's connected coding profile.
+FR-022
+The system shall store the connected platform name.
+FR-023
+The system shall store the platform username.
+FR-024
+The system shall maintain the user's current rating when available.
+FR-025
+The system shall maintain the user's maximum rating when available.
+FR-026
+The system shall maintain relevant rank information when available.
+FR-027
+The system shall record the time at which external profile data was last synchronized.
+---
+11. Contest Tracking
+FR-028
+The system shall display the user's available contest history.
+FR-029
+The system shall display relevant contest information.
+FR-030
+The system shall maintain historical rating information where available.
+FR-031
+The system shall allow users to visualize rating progression over time.
+FR-032
+The system shall calculate relevant contest-performance statistics from stored data.
+---
+12. Problem and Submission Tracking
+FR-033
+The system shall retrieve relevant submission information from supported platforms.
+FR-034
+The system shall identify successfully solved problems where the available platform data permits.
+FR-035
+The system shall organize problem-solving information by relevant attributes.
+FR-036
+The system shall provide statistics based on problem difficulty where available.
+FR-037
+The system shall provide statistics based on problem topics where available.
+FR-038
+The system shall provide relevant submission or verdict statistics.
+---
+13. Dashboard
+FR-039
+The system shall provide an authenticated user with a personalized dashboard.
+FR-040
+The dashboard shall display key coding-performance indicators.
+Potential indicators include:
+Current rating
+Maximum rating
+Problems solved
+Contest participation
+Recent activity
+Current goals
+FR-041
+The dashboard shall provide access to detailed analytics.
+FR-042
+The dashboard shall indicate when displayed coding data was last synchronized.
+---
+14. Analytics
+FR-043
+The system shall calculate coding-performance metrics from available user data.
+FR-044
+The system shall provide rating-progress analysis.
+FR-045
+The system shall provide problem-difficulty analysis.
+FR-046
+The system shall provide topic-based performance analysis where sufficient data is available.
+FR-047
+The system shall provide contest-performance analysis.
+FR-048
+The system shall provide activity/progress analysis over time.
+---
+15. Data Visualization
+FR-049
+The system shall display appropriate performance information using charts or graphs.
+FR-050
+The system shall provide a rating-history visualization.
+FR-051
+The system shall provide problem-solving visualizations.
+FR-052
+The system shall provide appropriate topic and difficulty visualizations.
+FR-053
+Visualizations shall represent stored data accurately.
+---
+16. Goal Management
+FR-054
+The system shall allow authenticated users to create personal coding goals.
+FR-055
+A goal shall contain relevant information such as target, deadline, and status where applicable.
+FR-056
+Users shall be able to update their goals.
+FR-057
+Users shall be able to delete their goals.
+FR-058
+The system shall display goal progress.
+FR-059
+The system shall identify completed and incomplete goals.
+---
+17. Interview Preparation
+The initial product scope includes an interview-preparation module.
+FR-060
+The system shall provide interview-preparation content to authenticated users.
+FR-061
+The system shall organize interview questions according to relevant categories.
+FR-062
+Users shall be able to mark questions as completed.
+FR-063
+Users shall be able to track their interview-preparation progress.
+FR-064
+Users shall be able to save/bookmark relevant questions where supported.
+---
+18. Administration
+FR-065
+The system shall provide authorized administrators with an administrative interface.
+FR-066
+Administrators shall be able to manage registered users.
+FR-067
+Administrators shall be able to manage applicable interview-preparation content.
+FR-068
+The system shall restrict administrative functions to authorized administrators.
+---
+19. Data Synchronization
+FR-069
+The system shall support synchronization of coding-platform data.
+FR-070
+The system shall record the last successful synchronization time.
+FR-071
+The system shall handle API failures gracefully.
+FR-072
+The system shall avoid unnecessary duplicate data where appropriate.
+FR-073
+The system shall provide an appropriate indication when synchronized data is unavailable or outdated.
+---
+20. Error Handling
+FR-074
+The system shall provide user-friendly messages for expected errors.
+FR-075
+The system shall handle unavailable external APIs.
+FR-076
+The system shall handle invalid coding-platform usernames.
+FR-077
+The system shall handle authentication failures.
+FR-078
+The system shall prevent sensitive technical information from being displayed to end users.
+---
+21. Non-Functional Requirements
+Functional requirements describe what the system does. Non-functional requirements describe the quality characteristics expected from the system.
+---
+21.1 Security
+NFR-001
+User credentials shall be securely handled and stored.
+NFR-002
+Protected resources shall require appropriate authentication and authorization.
+NFR-003
+Sensitive configuration values such as database credentials and API credentials shall not be stored directly in source code.
+NFR-004
+The system shall follow appropriate web-security practices.
+---
+21.2 Performance
+NFR-005
+The application should provide responsive interaction for normal user operations.
+NFR-006
+The system should avoid unnecessary external API requests.
+NFR-007
+Database queries should be designed to avoid unnecessary data retrieval.
+---
+21.3 Reliability
+NFR-008
+The application should handle temporary external API failures gracefully.
+NFR-009
+A failure in retrieving external data should not unnecessarily make the entire application unavailable.
+NFR-010
+Stored user data should remain consistent after synchronization operations.
+---
+21.4 Usability
+NFR-011
+The application should provide a clear and understandable user interface.
+NFR-012
+The dashboard should present important information without requiring unnecessary navigation.
+NFR-013
+The application should provide meaningful feedback when an operation succeeds or fails.
+---
+21.5 Responsiveness
+NFR-014
+The application should be usable on desktop, tablet, and mobile screen sizes.
+---
+21.6 Maintainability
+NFR-015
+The application shall use a modular architecture.
+NFR-016
+Individual application modules should have clearly defined responsibilities.
+NFR-017
+The source code should follow consistent coding and naming conventions.
+NFR-018
+Important application functionality should be covered by automated tests.
+---
+21.7 Scalability
+NFR-019
+The architecture should allow additional competitive-programming platforms to be integrated without major restructuring.
+NFR-020
+The database design should support growth in the number of users and stored coding records.
+---
+22. Data Requirements
+The system is expected to manage several categories of data.
+User Data
+Account information
+Authentication-related information
+Profile information
+Coding Profile Data
+Platform
+Username
+Rating
+Rank
+Maximum rating
+Synchronization information
+Contest Data
+Contest information
+Participation
+Rating changes
+Performance information
+Problem Data
+Problem information
+Difficulty
+Topics
+Submission information
+Goal Data
+Goal
+Target
+Deadline
+Progress
+Status
+Interview Data
+Questions
+Categories
+User completion status
+Bookmarks
+---
+23. External System Dependencies
+The application may depend on external competitive-programming APIs.
+The initial integration target is:
+Codeforces API
+The architecture must account for:
+API availability
+API response structure
+rate limits
+API errors
+data changes
+synchronization frequency
+The system should isolate external API communication from the rest of the application so that future integrations can be added without significantly changing the core application.
+---
+24. Scope
+24.1 In Scope
+The initial product scope includes:
+User authentication
+User profiles
+Codeforces profile integration
+Coding statistics
+Contest tracking
+Rating tracking
+Problem statistics
+Topic analysis
+Difficulty analysis
+Dashboard
+Data visualization
+Goal tracking
+Interview preparation
+Administrative functionality
+API integration
+PostgreSQL database
+Automated testing
+Deployment
+---
+25. Out of Scope
+The following are outside the initial implementation scope:
+Building a competitive-programming platform from scratch
+Hosting or executing user-submitted code
+Replacing Codeforces or other coding platforms
+Developing a mobile application
+Direct modification of external coding-platform accounts
+Collecting private information from external platforms without authorization
+Advanced machine-learning functionality
+Autonomous AI/agent systems
+These may be reconsidered only through a formal change to the product scope.
+---
+26. Assumptions
+The requirements are based on the following assumptions:
+Users have accounts on supported competitive-programming platforms.
+Required public data is accessible through supported APIs.
+External APIs may change over time.
+Users have internet access.
+The initial application will primarily be accessed through a web browser.
+Users are responsible for providing valid coding-platform usernames.
+The project will initially prioritize a limited number of supported platforms.
+---
+27. Constraints
+The project is subject to:
+External API limitations
+API rate limits
+Available development time
+Available computing resources
+Availability of public platform data
+Database and hosting resources
+Development-team capacity
+---
+28. Requirement Prioritization
+Requirements will later be prioritized using the following categories:
+Must Have
+Required for the MVP.
+Examples:
+Authentication
+User profile
+Codeforces integration
+Data synchronization
+Dashboard
+Basic analytics
+Should Have
+Important but not essential for the first usable release.
+Examples:
+Advanced visualizations
+Goal tracking
+Interview preparation
+Additional analytics
+Could Have
+Useful enhancements that can be implemented if time permits.
+Examples:
+Friend comparison
+Additional platform integrations
+Advanced dashboard customization
+Won't Have Initially
+Features intentionally excluded from the initial release.
+Examples:
+Mobile application
+Code execution platform
+Advanced AI/agent systems
+---
+29. MVP Definition
+The Minimum Viable Product will provide the following core workflow:
+```text
+Register
+   ↓
+Login
+   ↓
+Create Profile
+   ↓
+Connect Codeforces Account
+   ↓
+Retrieve Coding Data
+   ↓
+Store Data
+   ↓
+Process Statistics
+   ↓
+Display Dashboard
+   ↓
+View Analytics
+```
+The MVP should allow a real user to complete this workflow successfully.
+---
+30. Acceptance of Requirements
+A requirement will be considered acceptable for implementation when:
+It has a clear description.
+Its expected behavior can be understood.
+It can be tested.
+Its dependencies are identified where applicable.
+Its priority has been established.
+It does not conflict with approved project scope.
+Detailed acceptance criteria will be defined for individual backlog items during product backlog refinement.
+---
+31. Requirements Traceability
+Requirements will eventually be connected to:
+```text
+Requirement
+     ↓
+Product Backlog Item
+     ↓
+GitHub Issue
+     ↓
+Implementation
+     ↓
+Test Case
+     ↓
+Increment
+```
+This will allow us to determine whether an implemented feature actually satisfies an approved requirement.
+---
+32. Requirements Summary
+The Competitive Programming Tracker will provide a centralized web application for managing and analyzing competitive-programming performance.
+The system will initially focus on:
+secure authentication
+coding-profile integration
+external API communication
+data storage
+contest and problem tracking
+analytics
+visualization
+goal tracking
+interview preparation
+The requirements establish the foundation for the next stages of the project:
+Product Backlog → Architecture → Database Design → Sprint Planning
+---
+Document Status: Draft  
+Requirements Version: 1.0  
+Previous Lifecycle Stage: Discovery  
+Next Lifecycle Stage: Product Backlog
