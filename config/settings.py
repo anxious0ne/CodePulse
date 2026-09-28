@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-uvk3kp6#is%)@_a07$m^ttuc(ktqmmp@=umk6@44j#rpcsh@c@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'testserver', '*']
+
 
 
 # Application definition
@@ -149,3 +150,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
 }
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/dashboard/'
+LOGOUT_REDIRECT_URL = '/login/'
