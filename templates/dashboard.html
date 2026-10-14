@@ -3,49 +3,297 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CodeTrack AI — Dashboard</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodePulse — Competitive Programming Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-8">
+<body class="bg-slate-950 text-slate-100 min-h-screen antialiased flex flex-col">
 
-    <h1 class="text-2xl font-bold mb-6">CodeTrack AI Dashboard</h1>
+    <!-- CSRF Token for AJAX requests -->
+    {% csrf_token %}
 
-    <div class="grid grid-cols-3 gap-4 mb-8">
-        <div class="bg-white rounded-lg shadow p-5">
-            <p class="text-gray-500 text-sm">Current Rating</p>
-            <p id="current-rating" class="text-3xl font-bold">—</p>
+    <!-- Top Navigation Bar -->
+    <header class="bg-slate-900/90 backdrop-blur border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-sky-400 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+                    <i class="fa-solid fa-bolt text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent leading-none">
+                        CodePulse
+                    </h1>
+                    <span class="text-[10px] text-slate-400 tracking-wider uppercase font-semibold">Competitive Tracker</span>
+                </div>
+            </div>
+
+            <!-- User Menu -->
+            <div class="flex items-center space-x-4">
+                <div class="hidden sm:flex items-center space-x-2 text-sm text-slate-300 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/60">
+                    <i class="fa-regular fa-user text-slate-400"></i>
+                    <span class="font-medium text-slate-200">{{ user.username }}</span>
+                    {% if user.codeforces_handle %}
+                    <span class="text-xs px-2 py-0.5 rounded-full bg-slate-700 text-sky-400 font-mono">
+                        {{ user.codeforces_handle }}
+                    </span>
+                    {% endif %}
+                </div>
+                <a href="{% url 'logout-direct' %}"
+                    class="inline-flex items-center space-x-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
         </div>
-        <div class="bg-white rounded-lg shadow p-5">
-            <p class="text-gray-500 text-sm">Max Rating</p>
-            <p id="max-rating" class="text-3xl font-bold">—</p>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 space-y-8 w-full">
+
+        <!-- Notification Banner / Toast Container -->
+        <div id="alert-banner" class="hidden transition-all duration-300"></div>
+
+        <!-- Codeforces Integration Card -->
+        <div class="bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="space-y-1">
+                <div class="flex items-center space-x-3">
+                    <span class="px-2.5 py-0.5 rounded-md text-xs font-bold uppercase tracking-wider bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                        Codeforces Sync
+                    </span>
+                    <span id="handle-status-badge" class="text-xs text-slate-400 flex items-center space-x-1">
+                        <!-- Populated by JS -->
+                    </span>
+                </div>
+                <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+                    <span>Active Handle:</span>
+                    <span id="display-handle" class="text-sky-400 font-mono font-semibold">
+                        {{ user.codeforces_handle|default:"None Configured" }}
+                    </span>
+                </h2>
+                <p class="text-xs text-slate-400">
+                    Syncs contest rating progression, topic solve history, and recent submissions directly from Codeforces API.
+                </p>
+            </div>
+
+            <!-- Sync & Handle Control Form -->
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="relative flex-1 sm:w-60">
+                    <input type="text" id="handle-input" placeholder="Change Codeforces handle"
+                        value="{{ user.codeforces_handle|default:'' }}"
+                        class="w-full pl-3 pr-3 py-2 text-sm bg-slate-900 border border-slate-700 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <button id="btn-update-handle"
+                    class="px-4 py-2 text-sm font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center space-x-2">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span>Set Handle</span>
+                </button>
+                <button id="btn-sync"
+                    class="px-5 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-indigo-500 to-sky-500 hover:from-indigo-600 hover:to-sky-600 text-white shadow-lg shadow-indigo-500/20 transition flex items-center space-x-2">
+                    <i id="sync-icon" class="fa-solid fa-arrows-rotate"></i>
+                    <span id="sync-text">Sync Now</span>
+                </button>
+            </div>
         </div>
-        <div class="bg-white rounded-lg shadow p-5">
-            <p class="text-gray-500 text-sm">Problems Solved</p>
-            <p id="problems-solved" class="text-3xl font-bold">—</p>
+
+        <!-- Metrics KPI Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <!-- Current Rating -->
+            <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+                <div class="flex items-center justify-between text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
+                    <span>Current Rating</span>
+                    <i class="fa-solid fa-ranking-star text-indigo-400 text-base"></i>
+                </div>
+                <div class="flex items-baseline space-x-3">
+                    <span id="current-rating" class="text-3xl font-extrabold text-white">—</span>
+                    <span id="rank-badge" class="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700">—</span>
+                </div>
+                <div class="mt-2 text-xs text-slate-400 flex items-center space-x-1" id="rating-delta-container">
+                    <span id="rating-delta">—</span>
+                </div>
+            </div>
+
+            <!-- Peak Rating -->
+            <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+                <div class="flex items-center justify-between text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
+                    <span>Peak Rating</span>
+                    <i class="fa-solid fa-crown text-amber-400 text-base"></i>
+                </div>
+                <div class="flex items-baseline space-x-3">
+                    <span id="max-rating" class="text-3xl font-extrabold text-white">—</span>
+                    <span id="max-rank-badge" class="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700">—</span>
+                </div>
+                <div class="mt-2 text-xs text-slate-400">
+                    Highest career milestone
+                </div>
+            </div>
+
+            <!-- Problems Solved -->
+            <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+                <div class="flex items-center justify-between text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
+                    <span>Problems Solved</span>
+                    <i class="fa-solid fa-check-double text-emerald-400 text-base"></i>
+                </div>
+                <div class="flex items-baseline space-x-3">
+                    <span id="problems-solved" class="text-3xl font-extrabold text-white">—</span>
+                    <span id="solve-rate" class="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">—% rate</span>
+                </div>
+                <div class="mt-2 text-xs text-slate-400">
+                    <span id="total-submissions">—</span> total submissions
+                </div>
+            </div>
+
+            <!-- Contests Count -->
+            <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+                <div class="flex items-center justify-between text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
+                    <span>Contests Attended</span>
+                    <i class="fa-solid fa-trophy text-sky-400 text-base"></i>
+                </div>
+                <div class="flex items-baseline space-x-3">
+                    <span id="contests-count" class="text-3xl font-extrabold text-white">—</span>
+                    <span class="text-xs font-semibold text-slate-400">rated rounds</span>
+                </div>
+                <div class="mt-2 text-xs text-slate-400" id="last-contest-text">
+                    Last active: —
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div class="bg-white rounded-lg shadow p-5 mb-8">
-        <h2 class="text-lg font-semibold mb-4">Rating History</h2>
-        <canvas id="ratingChart" height="80"></canvas>
-    </div>
+        <!-- Charts Section (Grid: Rating Progression + Verdict Breakdown) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Rating Progression Chart (Span 2) -->
+            <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-chart-line text-indigo-400"></i>
+                            <span>Rating History</span>
+                        </h3>
+                        <p class="text-xs text-slate-400">Progression across competitive rounds</p>
+                    </div>
+                </div>
+                <div class="relative w-full h-72">
+                    <canvas id="ratingChart"></canvas>
+                </div>
+            </div>
 
-    <div class="bg-white rounded-lg shadow p-5">
-        <h2 class="text-lg font-semibold mb-4">Topic-wise Weak Areas</h2>
-        <table class="w-full text-left text-sm">
-            <thead>
-                <tr class="border-b">
-                    <th class="py-2">Tag</th>
-                    <th class="py-2">Attempted</th>
-                    <th class="py-2">Solved</th>
-                    <th class="py-2">Solve Rate</th>
-                </tr>
-            </thead>
-            <tbody id="topics-body"></tbody>
-        </table>
-    </div>
+            <!-- Verdict Distribution (Span 1) -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-chart-pie text-sky-400"></i>
+                        <span>Verdict Distribution</span>
+                    </h3>
+                    <p class="text-xs text-slate-400">Submission verdict accuracy breakdown</p>
+                </div>
+                <div class="relative w-full h-60 flex items-center justify-center">
+                    <canvas id="verdictChart"></canvas>
+                </div>
+                <div id="verdict-legend" class="text-xs text-slate-400 pt-2 border-t border-slate-800/80 flex flex-wrap gap-2 justify-center">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
 
+        <!-- Problem Difficulty Rating Distribution Chart -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-layer-group text-emerald-400"></i>
+                        <span>Problems Solved by Difficulty Rating</span>
+                    </h3>
+                    <p class="text-xs text-slate-400">Number of accepted problems categorized into Codeforces rating brackets</p>
+                </div>
+            </div>
+            <div class="relative w-full h-64">
+                <canvas id="difficultyChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Tables Section: Weak Topics & Recent Submissions -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Topic-Wise Weak Areas -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-bullseye text-rose-400"></i>
+                            <span>Topic-wise Weak Areas</span>
+                        </h3>
+                        <p class="text-xs text-slate-400">Topics prioritized by lowest solve rate</p>
+                    </div>
+                </div>
+                <div class="overflow-x-auto max-h-96">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="text-[11px] uppercase tracking-wider text-slate-400 bg-slate-950/60 sticky top-0">
+                            <tr class="border-b border-slate-800">
+                                <th class="py-2.5 px-3">Tag / Topic</th>
+                                <th class="py-2.5 px-3">Attempted</th>
+                                <th class="py-2.5 px-3">Solved</th>
+                                <th class="py-2.5 px-3">Solve Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topics-body" class="divide-y divide-slate-800/60">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recent Submissions Feed -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-clock-rotate-left text-indigo-400"></i>
+                            <span>Recent Submissions</span>
+                        </h3>
+                        <p class="text-xs text-slate-400">Latest problem submissions and verdicts</p>
+                    </div>
+                    <!-- Verdict filter dropdown -->
+                    <select id="submission-verdict-filter"
+                        class="bg-slate-950 border border-slate-800 rounded-lg text-xs px-2.5 py-1 text-slate-300 focus:outline-none">
+                        <option value="">All Verdicts</option>
+                        <option value="OK">Accepted (OK)</option>
+                        <option value="WRONG_ANSWER">Wrong Answer</option>
+                        <option value="TIME_LIMIT_EXCEEDED">TLE</option>
+                    </select>
+                </div>
+                <div class="overflow-x-auto max-h-96">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="text-[11px] uppercase tracking-wider text-slate-400 bg-slate-950/60 sticky top-0">
+                            <tr class="border-b border-slate-800">
+                                <th class="py-2.5 px-3">Problem</th>
+                                <th class="py-2.5 px-3">Rating</th>
+                                <th class="py-2.5 px-3">Verdict</th>
+                                <th class="py-2.5 px-3">Language</th>
+                            </tr>
+                        </thead>
+                        <tbody id="submissions-body" class="divide-y divide-slate-800/60">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900/60 border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+        <p>CodePulse &copy; 2026 — Built with Django, DRF, MySQL & Codeforces API.</p>
+    </footer>
+
+    <!-- Scripts -->
     <script src="{% static 'js/dashboard.js' %}"></script>
 </body>
 </html>

@@ -20,13 +20,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-uvk3kp6#is%)@_a07$m^ttuc(ktqmmp@=umk6@44j#rpcsh@c@'
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-uvk3kp6#is%)@_a07$m^ttuc(ktqmmp@=umk6@44j#rpcsh@c@')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'testserver', '*']
+raw_hosts = config('ALLOWED_HOSTS', default='127.0.0.1,localhost,testserver,*')
+ALLOWED_HOSTS = [h.strip() for h in raw_hosts.split(',') if h.strip()]
+
 
 
 
@@ -84,16 +84,33 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': config('DB_PORT'),
+DB_ENGINE = config('DB_ENGINE', default='sqlite').lower()
+
+if DB_ENGINE == 'mysql' and config('DB_NAME', default=''):
+    try:
+        import pymysql
+        pymysql.install_as_mysql()
+    except ImportError:
+        pass
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': config('DB_NAME'),
+            'USER': config('DB_USER', default='root'),
+            'PASSWORD': config('DB_PASSWORD', default=''),
+            'HOST': config('DB_HOST', default='127.0.0.1'),
+            'PORT': config('DB_PORT', default='3306'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
 
 
 # Password validation
@@ -153,4 +170,9 @@ REST_FRAMEWORK = {
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
-LOGOUT_REDIRECT_URL = '/login/'
+LOGOUT_REDIRECT_URL = '/login/'
+
+# Codeforces API Configuration
+CODEFORCES_API_KEY = config('CODEFORCES_API_KEY', default='')
+CODEFORCES_API_SECRET = config('CODEFORCES_API_SECRET', default='')
+
