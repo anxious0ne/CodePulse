@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import redirect
 from users.views import (
+    home_page,
     dashboard_page,
     DashboardSummaryView,
     SyncCodeforcesView,
@@ -22,7 +23,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Web Pages
-    path('', lambda request: redirect('dashboard'), name='root'),
+    path('', home_page, name='home'),
+    path('home/', home_page, name='home-page'),
     path('dashboard/', dashboard_page, name='dashboard'),
     path('login/', login_view, name='login-direct'),
     path('register/', register_view, name='register-direct'),
@@ -44,4 +46,12 @@ urlpatterns = [
     path('api/submissions/recent/', RecentSubmissionsView.as_view(), name='api-submissions-recent'),
     path('api/codeforces/sync/', SyncCodeforcesView.as_view(), name='api-codeforces-sync'),
     path('api/codeforces/handle/', UpdateHandleView.as_view(), name='api-codeforces-handle'),
+    path('api/profiles/handle/', UpdateHandleView.as_view(), name='api-profiles-handle'),
+
+    # New app routes
+    path('api/profile/', include('profiles.urls')),
+    path('api/goals/', include('goals.urls')),
+    path('api/interview/', include('interview.urls')),
+    path('api/codeforces/', include('codeforces.urls')),
+    path('api/problems/', include('problem_tracker.urls')),
 ]

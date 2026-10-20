@@ -54,6 +54,7 @@ def register_view(request):
 
         # Log in the user immediately
         auth_login(request, user)
+        request.session['is_new_user'] = True
 
         # Attempt initial sync if handle provided
         if codeforces_handle:
@@ -82,6 +83,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             auth_login(request, user)
+            request.session['is_new_user'] = False
             return redirect(next_url)
         else:
             return render(request, 'accounts/login.html', {

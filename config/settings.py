@@ -48,6 +48,10 @@ INSTALLED_APPS = [
     'problem_tracker',
     'submissions',
     'analytics',
+    'profiles',
+    'goals',
+    'interview',
+    'codeforces',
 ]
 
 AUTH_USER_MODEL = 'users.User'

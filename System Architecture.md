@@ -86,9 +86,9 @@ Database Access		Django ORM		Communication between Django and MySQL
 
 Frontend Structure	HTML5			Webpage structure
 
-Frontend Styling	CSS			Styling
+Frontend Styling	CSS + Custom Tokens	Styling & Coders' Compass Theme Tokens
 
-UI Framework		Tailwind CSS		Utility-based UI development
+UI Framework		Tailwind CSS		Utility-based UI development with Work Sans typography
 
 Frontend Logic		JavaScript		Browser-side interaction
 
@@ -465,25 +465,30 @@ The system will follow a layered web architecture.
 
 ###### **6.1 Presentation Layer**
 
+Responsible for all user-facing interactions, visual presentation, and client-side data rendering.
 
+The Presentation Layer is structured into two distinct surfaces:
 
-Responsible for interaction with the user.
+1. **Public Presentation Surface (`/` -> `templates/home.html`)**:
+   * Designed for discovery, orientation, and onboarding.
+   * Delivers technical marketing copy, live telemetry radar widgets, platform statistics, and instant Call-to-Action routes (Register, Login, Live Demo).
+   * Context-aware: dynamically adapts CTA banners for authenticated sessions.
 
+2. **Private Analytics Surface (`/dashboard/` -> `templates/dashboard.html`)**:
+   * Protected cockpit accessible only to authenticated users (`@login_required`).
+   * Hosts high-density KPI cards, interactive Chart.js visualizations (Rating Progression, Verdicts Doughnut, Difficulty Distribution), problem topic mastery tables, submission audit feeds, and Codeforces handle synchronization controls.
+   * Integrates the dynamic Onboarding & Welcome Back greeting banner.
 
+3. **Authentication Surface (`/accounts/*`)**:
+   * Neo-brutalist authentication cards for Login (`templates/accounts/login.html`) and Registration (`templates/accounts/register.html`).
+   * Provides 1-click live demo account auto-fill (`demo_coder`) for rapid evaluation.
 
-Technologies:
-
-
-
-HTML5
-
-CSS
-
-Tailwind CSS
-
-JavaScript
-
-Chart.js
+**Technologies**:
+* HTML5 (Semantic document outline)
+* Vanilla CSS & Tailwind CSS (Design tokens, coordinate grid, and neo-brutalist utilities)
+* Google Font: *Work Sans* (Primary geometric typeface) & Monospace fonts (Telemetry data)
+* JavaScript (ES6+ modular DOM controllers and async fetch clients)
+* Chart.js 4.4+ (Custom-themed responsive data visualizations)
 
 
 
@@ -635,41 +640,225 @@ The applications should have clearly separated responsibilities.
 
 ##### **9. Frontend Architecture**
 
+The frontend will initially use a server-oriented Django web application combined with JavaScript and Chart.js for dynamic dashboard functionality.
 
-
-The frontend will initially use a server-oriented Django web application combined with JavaScript for dynamic functionality.
-
-
-
+```
 Browser
+   │
+   ├─ HTML5 Structure
+   ├─ Tailwind CSS + Coders' Compass Design Tokens
+   └─ JavaScript & Chart.js
+         │
+         ▼
+     REST API
+         │
+         ▼
+      Django
+```
 
-&#x20;  │
+We are intentionally not introducing React or another heavy frontend framework at this stage. This keeps the technology stack manageable while establishing solid web fundamentals.
 
-&#x20;  ├── HTML
+###### **9.1 UI/UX Design System Specification (Coders' Compass Aesthetic)**
 
-&#x20;  ├── Tailwind CSS
+The user interface follows a modern **Technical Editorial & Neo-Brutalist** aesthetic inspired directly by the design system of [Coders' Compass](https://coderscompass.org/).
 
-&#x20;  └── JavaScript
+Key visual principles include:
+* **Warm Technical Palette**: Balanced contrast between deep atmospheric blues (`Navy`, `Navy Deep`), warm grounding tones (`Peach`, `Amber`, `Cream`), and energetic accents (`Sky Blue`, `Mint Green`, `Pink`).
+* **Tactile Neo-Brutalist Geometry**: Cards, buttons, and badges utilize crisp solid borders (1.5px to 2px) and sharp, flat offset drop-shadows (`3px 3px 0px var(--color-navy-darker)`) without diffuse blur, providing clear visual hierarchy and an engineering-grade tactile feel.
+* **Tight Border Radii**: Components feature subtle corner rounding (`3px` to `4px`) rather than pill shapes or extreme rounded corners.
+* **Technical Background Grid**: Subtle graph/coordinate grid lines (`32px` grid intervals) evoking architectural blueprints and engineering graph paper.
 
-&#x20;         │
+###### **9.2 Color Tokens & Palette Hierarchy**
 
-&#x20;         ▼
+The application defines semantic color variables mapped to functional roles:
 
-&#x20;     REST API
+| Token Name | Hex Code | Light Theme Role | Dark Theme Role | Functional Mapping |
+| :--- | :--- | :--- | :--- | :--- |
+| `--color-peach` | `#F8D7B0` | Primary Brand Card / Highlight | Warm Accent / Subtitle | Brand accents, key container titles |
+| `--color-amber` | `#EFBF80` | Breadcrumb Bg / Borders | Highlight / Stat Values | KPI highlights, breadcrumbs, rating tags |
+| `--color-cream` | `#F2F0EC` | Main Page Background | — | Warm paper neutral background |
+| `--color-brown-dark` | `#392518` | Primary Headings / Strong Borders | Contrast Framing | High contrast framing and solid shadows |
+| `--color-charcoal` | `#333333` | Body Text | — | Crisp readable text in light mode |
+| `--color-navy` | `#17415C` | Hero Background / Contrast | Main Card / Container Surface | Dashboard panel backgrounds |
+| `--color-navy-deep` | `#243A45` | Drop Shadows | Main Page Background | Deep canvas background |
+| `--color-off-white` | `#F3F2F2` | Surface Inputs | Primary Text | High-contrast text on dark surfaces |
+| `--color-sky` | `#7BD4FF` | Primary Action (CTA) | Primary Action (CTA) | Primary buttons, active tabs, focus ring |
+| `--color-sky-deep` | `#288CBE` | Button Hover State | Button Hover State | CTA hover and active states |
+| `--color-green` | `#90EE90` | Secondary Action / Success | Secondary Action / Success | Positive deltas, verified pills, secondary CTA |
+| `--color-green-deep` | `#409540` | Success Dark / Active | Success Dark / Active | Hover for secondary actions |
+| `--color-pink` | `#FF90E8` | Category Badges | Category Badges | Special tags, algorithm difficulty badges |
+| `--color-violet` | `#C9A0EC` | Visited Links / Master Tier | Visited Links / Master Tier | Candidate Master & higher ranks |
+| `--color-error` | `#FF6B6B` | Error / Alert / Loss | Error / Alert / Loss | Validation errors, negative rating changes |
 
-&#x20;         │
+###### **9.3 Typography Scale**
 
-&#x20;         ▼
+* **Primary Font Family**: `'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`
+  * Work Sans delivers an open, geometric, highly legible modern grotesque aesthetic suited for dense data interfaces.
+  * Weights utilized: `400` (Regular body), `500` (Medium labels & table headers), `600` (Semibold cards & buttons), `700` (Bold KPI values & titles).
+* **Monospace Font Family**: `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`
+  * Applied to Codeforces handles, ratings, rank deltas, timestamps, and problem codes.
 
-&#x20;      Django
+###### **9.4 Component Design Standards**
 
+1. **Primary Buttons (CTA)**:
+   * Background: `--color-sky` (`#7BD4FF`) with text `--color-brown-dark` (`#392518`)
+   * Border: `1.5px solid var(--color-brown-dark)`
+   * Shadow: `3px 3px 0 var(--color-navy-darker)`
+   * Hover: `--color-sky-deep` (`#288CBE`) with text `--color-off-white`
+   * Active: Translates `1px 1px` with shadow reduced to `2px 2px 0`
+2. **Secondary Buttons**:
+   * Background: `--color-green` (`#90EE90`) with hover `--color-green-deep` (`#409540`)
+   * Shadow: `3px 3px 0 var(--color-navy-darker)`
+3. **Dashboard Metric & Analytics Cards**:
+   * Background: `--color-navy` (`#17415C`)
+   * Border: `1px solid rgba(239, 191, 128, 0.22)`
+   * Shadow: `3px 3px 0 #0E2433`
+   * Border Radius: `4px`
+4. **Data Tables (Contests & Submissions)**:
+   * Header: Sticky top bar with `--color-amber` (`#EFBF80`) titles on dark navy background.
+   * Hairline Dividers: `1px solid rgba(239, 191, 128, 0.15)`.
+5. **Tag Badges**:
+   * Distinct colored pills with `3px` radius for problem tags (e.g. `dp`, `graphs`, `math`, `greedy`).
 
+###### **9.5 Chart.js Visualization Standards**
 
-We are intentionally not introducing React or another frontend framework at this stage.
+* **Rating Progression (Line Chart)**:
+  * Stroke: `--color-sky` (`#7BD4FF`) with 2.5px width.
+  * Fill: Vertical gradient from `rgba(123, 212, 255, 0.16)` to transparent.
+  * Data Points: Radius 3.5px with `--color-sky` fill and `--color-navy-deep` outline.
+  * Grid lines: Subtle warm tone `rgba(242, 240, 236, 0.08)`.
+* **Verdicts Distribution (Doughnut Chart)**:
+  * OK / Accepted: `--color-green` (`#90EE90`)
+  * Wrong Answer: `--color-error` (`#FF6B6B`)
+  * Time Limit Exceeded: `--color-amber` (`#EFBF80`)
+  * Memory Limit / Runtime Error: `--color-pink` (`#FF90E8`)
+  * Compilation Error: `--color-violet` (`#C9A0EC`)
+* **Difficulty Distribution (Bar Chart)**:
+  * Bars: Gradient from `--color-amber` (`#EFBF80`) to `--color-peach` (`#F8D7B0`), hover state in `--color-sky` (`#7BD4FF`).
 
+###### **9.6 Page Hierarchy & Route Architecture**
 
+The application presents a clearly delineated routing and information hierarchy:
 
-This keeps the technology stack manageable while allowing us to learn the fundamentals of web development properly.
+| Route | View Controller | Template | Access Level | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `/` | `users.views.home_page` | `templates/home.html` | Public | Front landing page with feature cards, telemetry radar, and auth CTAs |
+| `/dashboard/` | `users.views.dashboard_page` | `templates/dashboard.html` | Authenticated | Main analytics dashboard with charts, KPI cards, and sync controls |
+| `/accounts/login/` | `accounts.views.login_view` | `templates/accounts/login.html` | Anonymous (guest) | Login page with credential form and 1-click demo filler |
+| `/accounts/register/` | `accounts.views.register_view` | `templates/accounts/register.html` | Anonymous (guest) | Sign-up page with handle binding and initial sync trigger |
+| `/accounts/logout/` | `accounts.views.logout_view` | — | Authenticated | Terminates user session and redirects to login |
+| `/api/*` | DRF ViewSets / APIViews | JSON Payload | Authenticated / Token | Modular REST endpoints serving chart and sync data |
+
+```
+                       [ Incoming Visitor ]
+                                 │
+                   ┌─────────────┴─────────────┐
+                   ▼                           ▼
+        [ Anonymous Guest ]          [ Authenticated User ]
+                   │                           │
+                   ├─ GET / (Landing Page)     ├─ GET / (Personalized Home)
+                   ├─ GET /accounts/login/     ├─ GET /dashboard/ (Analytics)
+                   └─ GET /accounts/register/  └─ POST /accounts/logout/
+```
+
+###### **9.7 Public Landing Page Design Specification**
+
+The landing page (`templates/home.html`) serves as the editorial gateway to the platform. Built on the Coders' Compass neo-brutalist design tokens, it contains four structured tiers:
+
+1. **Editorial Hero Section**:
+   * **Badge Ribbon**: Eyebrow badge in Warm Peach (`#F8D7B0`) with `#392518` border: `Coders' Compass Edition • Codeforces Tracker`.
+   * **Punchy Typography**: Massive geometric headline (`text-4xl` to `text-6xl`, font-black, uppercase) featuring color-accented keywords:
+     * *Master* in Sky Blue (`#7BD4FF`)
+     * *Climb* in Peach (`#F8D7B0`)
+   * **Interactive CTA Switcher**:
+     * For Guests: Dual brutalist action buttons: Primary Sky Blue *"Create Free Account →"* (`btn-compass-primary`) and Warm Amber *"Sign In"* (`btn-compass-secondary`), accompanied by a live demo credential hint.
+     * For Authenticated Users: Direct *"Go to Your Dashboard →"* primary button and a *"Welcome back, {username}!"* indicator chip.
+   * **Live Telemetry Radar Badge**:
+     * Circular compass emblem with slow CSS rotation animation (`animate-spin-slow`).
+     * Live metrics chips displaying supported Codeforces Rating Range (`800 – 3500+`) and Algorithm Topics (`22+ Tags`).
+     * Real-time pulsing operational status indicator (`API Status: Fully Operational`).
+
+2. **Key Platform Metrics Strip**:
+   * Four neo-brutalist metric cards displaying high-impact system benchmarks:
+     * `20+` Official Contest Rounds (Sky Blue border)
+     * `9 Tiers` Difficulty Brackets (Amber border)
+     * `22 Tags` Algorithmic Topics (Mint Green border)
+     * `< 1s` Direct Codeforces Sync (Pink border)
+
+3. **Core Feature Quadrants**:
+   * Four distinct neo-brutalist cards highlighting the analytical engine:
+     1. **Official Contest Rating Trajectory**: Visualizing progression from Pupil to Grandmaster with multi-stop gradient line charts.
+     2. **Topic-Wise Weak Area Discovery**: Aggregating solve rates across DP, Graphs, Trees, Math, and Greedy to prioritize practice.
+     3. **Verdict & Accuracy Distribution**: Identifying submission friction points (WA, TLE, MLE) via vibrant doughnut charts.
+     4. **Difficulty Ladder Progression**: Tracking comfort levels across rating brackets from 800 to 2600+.
+
+4. **Closing Conversion Strip**:
+   * Full-width card with Warm Peach top border (`border-t-8 border-t-compass-peach`) prompting the user to explore the live dashboard.
+
+###### **9.8 Personalized Greeting & Onboarding State Machine**
+
+To provide a distinct, personalized experience for first-time versus returning users, the application implements an onboarding state machine managed across the session and presentation layers:
+
+```
+                  ┌──────────────────────────────┐
+                  │      User Authenticates      │
+                  └──────────────┬───────────────┘
+                                 │
+                ┌────────────────┴────────────────┐
+                ▼                                 ▼
+       [ Registration Flow ]              [ Login Flow ]
+                │                                 │
+    session['is_new_user'] = True    session['is_new_user'] = False
+                │                                 │
+                └────────────────┬────────────────┘
+                                 ▼
+                     GET /dashboard/ View
+                                 │
+              ┌──────────────────┴──────────────────┐
+              ▼                                     ▼
+      is_new_user == True                  is_new_user == False
+              │                                     │
+    ┌───────────────────────────┐         ┌───────────────────────────┐
+    │  Green Onboarding Banner  │         │  Sky Blue Greeting Banner │
+    │  "🎉 Welcome to           │         │  "👋 Welcome back,        │
+    │   CodeTrack AI, {user}!"  │         │   {user}!"                │
+    │  [Set Handle → CTA]       │         │                           │
+    └───────────────────────────┘         └───────────────────────────┘
+```
+
+1. **New User State (`is_new_user = True`)**:
+   * **Trigger**: Activated when a user completes registration via `accounts.views.register_view`. The view injects `request.session['is_new_user'] = True`.
+   * **Fallback Heuristic**: If the session flag has expired, `users.views.dashboard_page` checks whether `user.date_joined` is within the last 2 hours and whether total submissions count is `0`.
+   * **Visual Presentation**:
+     * Container: Deep emerald gradient (`from-compass-navy to-[#133526]`) with an `8px` Mint Green (`#90EE90`) left border.
+     * Chip: High-contrast `NEW CODER` pill in `#90EE90` with dark brown text.
+     * Headline: *"🎉 Welcome to CodeTrack AI, {{ user.username }}!"*
+     * Subtext: Educational prompt guiding the user to bind their Codeforces handle and perform their first synchronization.
+     * Action CTA: Direct *"Set Handle →"* button linking to `#handle-input` for instant focus.
+
+2. **Returning User State (`is_new_user = False`)**:
+   * **Trigger**: Activated when an existing user signs in via `accounts.views.login_view`. The view sets `request.session['is_new_user'] = False`.
+   * **Visual Presentation**:
+     * Container: Deep cyan gradient (`from-compass-navy to-[#122e42]`) with an `8px` Sky Blue (`#7BD4FF`) left border.
+     * Icon Badge: Waving hand icon with Sky Blue background.
+     * Headline: *"👋 Welcome back, {{ user.username }}!"*
+     * Subtext: Motivational greeting highlighting latest rating trends and solved problem updates.
+
+3. **Contextual Home Page Recognition**:
+   * When an authenticated user visits `/`, the public hero recognizes the active session and renders a personalized chip: *"Welcome back, {{ user.username }}!"*, swapping the registration CTA with *"Go to Your Dashboard →"*.
+
+###### **9.9 Global Navigation & Header Standards**
+
+The top navigation bar (`templates/base.html`) provides persistent orientation across all pages:
+* **Background & Border**: Warm Peach (`#F8D7B0`) with a 4px solid Dark Brown (`#392518`) bottom border and an Amber (`#EFBF80`) highlight ribbon.
+* **Brand Identity**: Stylized compass logo (`fa-compass` inside an Amber circular badge with `2px` solid drop-shadow) linking to `/`.
+* **Dynamic Nav Links**:
+  * `Home` (Always visible)
+  * `Dashboard` (Rendered when `user.is_authenticated`)
+* **User Profile & Session Controls**:
+  * Displays user handle / username in a neo-brutalist tag badge with initial avatar circle.
+  * Direct tactile `Logout` button with hover state transitions.
+
 
 
 
@@ -994,33 +1183,44 @@ The synchronization mechanism should avoid unnecessary duplicate records.
 
 ##### **15. Authentication Architecture**
 
+The authentication architecture balances security, session isolation, and personalized user onboarding:
 
+```
+                            [ User ]
+                               │
+               ┌───────────────┴───────────────┐
+               ▼                               ▼
+    [ Registration View ]               [ Login View ]
+               │                               │
+    • Validates unique user/email       • Authenticates credentials
+    • Verifies Codeforces handle        • Enforces CSRF token
+    • Creates User model record         • Initializes session
+    • Sets session['is_new_user'] = T   • Sets session['is_new_user'] = F
+               │                               │
+               └───────────────┬───────────────┘
+                               ▼
+                   [ Django auth_login() ]
+                               │
+                               ▼
+                  [ Authenticated Session ]
+                               │
+                               ▼
+                   [ Redirect to /dashboard/ ]
+                               │
+               ┌───────────────┴───────────────┐
+               ▼                               ▼
+      is_new_user == True             is_new_user == False
+               │                               │
+    [ New User Onboarding ]         [ Returning User Welcome ]
+    • Mint Green Welcome Banner     • Sky Blue Welcome Back Banner
+    • Direct Handle Setup CTA       • Direct Analytics Cockpit
+```
 
-The authentication flow will be:
-
-
-
-User
-
-&#x20;↓
-
-Registration/Login
-
-&#x20;↓
-
-Django Authentication
-
-&#x20;↓
-
-Authenticated Session
-
-&#x20;↓
-
-Protected Application
-
-
-
-Protected functionality will require authentication.
+**Key Authentication Security Measures**:
+1. **Password Hashing**: Django's PBKDF2 with SHA-256 password hasher with salt generation.
+2. **CSRF Protection**: All form submissions (login, registration, handle updates) require strict `{% csrf_token %}` verification.
+3. **Session Cookie Isolation**: HTTP-only session cookies with configurable expiry and secure transport flags.
+4. **Login Redirection**: Unauthenticated attempts to access `@login_required` views (e.g. `/dashboard/`) automatically capture `?next=` parameters for seamless post-login redirection.
 
 
 

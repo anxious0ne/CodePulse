@@ -14,13 +14,19 @@
 **CodePulse** consolidates competitive programming progress into a clean, actionable web dashboard. By integrating directly with the **Codeforces Public API**, it continuously synchronizes rating progression, contest rankings, topic solve rates, and recent submissions.
 
 ### ✨ Key Features
-- **Centralized Dashboard**: Live Codeforces rating, historical peak rank, win/solve percentage, and career stats.
-- **Dynamic Rating History**: Interactive line chart powered by Chart.js displaying rating milestones and contest deltas.
-- **Weak Topic Identification**: Calculates solve rates across algorithm tags (`dp`, `greedy`, `graphs`, `math`) and prioritizes areas needing practice.
-- **Verdict Distribution**: Doughnut visualization showing accepted vs. failed submissions (WA, TLE, Runtime Error).
-- **Difficulty Rating Breakdown**: Categorizes solved problems into Codeforces difficulty brackets (`< 1000` to `2600+`).
-- **On-Demand & Background Sync**: Sync your profile through the dashboard button or schedule cron jobs using the custom Django management command.
-- **Built-in Authentication**: Secure registration, login, session management, and CSRF protection.
+- **Public Front / Landing Page**: High-impact editorial landing page (`/`) introducing platform capabilities with a live Codeforces telemetry radar badge, system benchmark strip, and dynamic Call-to-Actions.
+- **Personalized Onboarding & Welcome Flow**:
+  - **New Users**: Celebratory Mint Green onboarding card (`🎉 Welcome to CodeTrack AI, {user}!`) with guided handle setup.
+  - **Returning Users**: Sky Blue greeting banner (`👋 Welcome back, {user}!`) with immediate access to updated analytics.
+  - **Context-Aware Navigation**: Header and home page dynamically reflect authentication state.
+- **Coders' Compass Neo-Brutalist Design**: Full visual overhaul inspired by [Coders' Compass](https://coderscompass.org/) featuring *Work Sans* typography, warm peach navbar, coordinate grid background, and tactile drop shadows (`3px 3px 0px #0E2433`).
+- **Centralized Analytics Dashboard**: Live Codeforces rating, historical peak rank, solve counts, and active contest records.
+- **Dynamic Rating Trajectory**: Interactive multi-stop gradient line chart powered by Chart.js displaying rating milestones and contest deltas.
+- **Weak Topic Identification**: Calculates solve rates across 22+ algorithm tags (`dp`, `greedy`, `graphs`, `math`, `trees`) and prioritizes practice areas.
+- **Verdict Distribution**: 5-slice doughnut visualization showing accepted vs. failed submissions (AC, WA, TLE, MLE, CE).
+- **Difficulty Rating Ladder**: Categorizes solved problems into 9 Codeforces difficulty brackets (`< 1000` to `2600+`).
+- **On-Demand & Background Sync**: Sync profile submissions through the dashboard button or schedule cron jobs using custom Django management commands.
+- **Built-in Authentication & Live Demo**: Secure registration and login with pre-seeded demo credentials (`demo_coder` / `coderscompass123`).
 
 ---
 
@@ -35,6 +41,19 @@
 | **Frontend UI** | Tailwind CSS + HTML5 | Modern dark-themed dashboard components & responsive design |
 | **Visualizations** | Chart.js | Interactive rating progression, verdict doughnut, difficulty bars |
 | **External Integration** | Codeforces API | Profile stats, contest history, and submission logs |
+
+---
+
+## ⚡ Live Demo Account (Instant Testing)
+
+For evaluators, reviewers, and local testing, CodePulse includes a pre-seeded high-activity competitive programming profile:
+
+* **URL**: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+* **Username**: `demo_coder`
+* **Password**: `coderscompass123`
+* **Codeforces Handle**: `Errichto` (Grandmaster tier, 20 contests, 56 problems, 120 submissions pre-seeded)
+
+Alternatively, register a new account on `/accounts/register/` to experience the **New User Onboarding** welcome flow!
 
 ---
 

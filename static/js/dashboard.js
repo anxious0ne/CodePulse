@@ -1,4 +1,4 @@
-// CodePulse Dashboard Client Scripts
+// CodePulse Dashboard Client Scripts - Coders' Compass Colorful Edition
 
 function getCookie(name) {
     let cookieValue = null;
@@ -22,16 +22,16 @@ function showAlert(message, type = 'success') {
     if (!banner) return;
 
     const isSuccess = type === 'success';
-    banner.className = `p-4 rounded-xl text-sm flex items-center justify-between border ${
-        isSuccess ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+    banner.className = `p-4 rounded-lg text-sm flex items-center justify-between border-2 shadow-brutal font-bold ${
+        isSuccess ? 'bg-compass-green text-compass-brown border-compass-brown' : 'bg-compass-error text-white border-compass-brown'
     }`;
     banner.innerHTML = `
         <div class="flex items-center space-x-2">
-            <i class="fa-solid ${isSuccess ? 'fa-circle-check text-emerald-400' : 'fa-circle-exclamation text-rose-400'} text-base"></i>
+            <i class="fa-solid ${isSuccess ? 'fa-circle-check text-base' : 'fa-triangle-exclamation text-base'}"></i>
             <span>${message}</span>
         </div>
-        <button onclick="document.getElementById('alert-banner').classList.add('hidden')" class="text-xs opacity-70 hover:opacity-100">
-            <i class="fa-solid fa-xmark"></i>
+        <button onclick="document.getElementById('alert-banner').classList.add('hidden')" class="text-xs opacity-80 hover:opacity-100">
+            <i class="fa-solid fa-xmark text-sm"></i>
         </button>
     `;
     banner.classList.remove('hidden');
@@ -61,11 +61,14 @@ async function loadSummary() {
         }
         if (handleStatus) {
             if (data.is_handle_verified) {
-                handleStatus.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400"></i><span class="text-emerald-400">Verified</span>';
+                handleStatus.innerHTML = '<i class="fa-solid fa-circle-check"></i><span>Verified</span>';
+                handleStatus.className = 'px-2.5 py-1 rounded text-xs font-bold flex items-center space-x-1.5 bg-compass-green text-compass-brown border-2 border-compass-brown shadow-[2px_2px_0px_#392518]';
             } else if (data.codeforces_handle) {
-                handleStatus.innerHTML = '<i class="fa-solid fa-clock text-amber-400"></i><span class="text-amber-400">Pending Sync</span>';
+                handleStatus.innerHTML = '<i class="fa-solid fa-clock"></i><span>Pending Sync</span>';
+                handleStatus.className = 'px-2.5 py-1 rounded text-xs font-bold flex items-center space-x-1.5 bg-compass-amber text-compass-brown border-2 border-compass-brown shadow-[2px_2px_0px_#392518]';
             } else {
-                handleStatus.innerHTML = '<span class="text-slate-500">Unlinked</span>';
+                handleStatus.innerHTML = '<span>Unlinked</span>';
+                handleStatus.className = 'px-2.5 py-1 rounded text-xs font-bold bg-compass-navyDeep text-compass-offWhite/60 border border-compass-offWhite/30';
             }
         }
 
@@ -73,14 +76,15 @@ async function loadSummary() {
         const currentRatingEl = document.getElementById('current-rating');
         const rankBadge = document.getElementById('rank-badge');
         if (currentRatingEl) {
-            currentRatingEl.textContent = data.current_rating ?? '—';
+            currentRatingEl.textContent = data.current_rating ?? '-';
             if (data.rank_color) currentRatingEl.style.color = data.rank_color;
         }
         if (rankBadge) {
             rankBadge.textContent = data.rank_title || 'Unrated';
             if (data.rank_color) {
-                rankBadge.style.borderColor = data.rank_color;
-                rankBadge.style.color = data.rank_color;
+                rankBadge.style.backgroundColor = data.rank_color;
+                rankBadge.style.color = '#ffffff';
+                rankBadge.style.borderColor = '#0e2433';
             }
         }
 
@@ -89,11 +93,11 @@ async function loadSummary() {
         if (deltaContainer) {
             const delta = data.rating_delta;
             if (delta > 0) {
-                deltaContainer.innerHTML = `<span class="text-emerald-400 font-semibold"><i class="fa-solid fa-arrow-trend-up"></i> +${delta}</span> <span class="text-slate-500">from previous round</span>`;
+                deltaContainer.innerHTML = `<span class="px-2 py-0.5 rounded bg-compass-green text-compass-brown font-extrabold border border-compass-brown shadow-[1px_1px_0px_#392518]"><i class="fa-solid fa-arrow-trend-up"></i> +${delta}</span> <span class="text-compass-offWhite/80 ml-1">last round</span>`;
             } else if (delta < 0) {
-                deltaContainer.innerHTML = `<span class="text-rose-400 font-semibold"><i class="fa-solid fa-arrow-trend-down"></i> ${delta}</span> <span class="text-slate-500">from previous round</span>`;
+                deltaContainer.innerHTML = `<span class="px-2 py-0.5 rounded bg-compass-error text-white font-extrabold border border-compass-brown shadow-[1px_1px_0px_#392518]"><i class="fa-solid fa-arrow-trend-down"></i> ${delta}</span> <span class="text-compass-offWhite/80 ml-1">last round</span>`;
             } else {
-                deltaContainer.innerHTML = `<span class="text-slate-400">No change</span>`;
+                deltaContainer.innerHTML = `<span class="text-compass-offWhite/60">No recent delta</span>`;
             }
         }
 
@@ -101,34 +105,38 @@ async function loadSummary() {
         const maxRatingEl = document.getElementById('max-rating');
         const maxRankBadge = document.getElementById('max-rank-badge');
         if (maxRatingEl) {
-            maxRatingEl.textContent = data.max_rating ?? '—';
+            maxRatingEl.textContent = data.max_rating ?? '-';
             if (data.max_rank_color) maxRatingEl.style.color = data.max_rank_color;
         }
         if (maxRankBadge) {
-            maxRankBadge.textContent = data.max_rank_title || '—';
-            if (data.max_rank_color) {
-                maxRankBadge.style.borderColor = data.max_rank_color;
-                maxRankBadge.style.color = data.max_rank_color;
-            }
+            maxRankBadge.textContent = `Peak Rank: ${data.max_rank_title || '-'}`;
         }
 
         // Solved & Rate
-        document.getElementById('problems-solved').textContent = data.problems_solved ?? '0';
-        document.getElementById('solve-rate').textContent = `${data.solve_rate ?? 0}% rate`;
-        document.getElementById('total-submissions').textContent = data.total_submissions ?? '0';
+        const psEl = document.getElementById('problems-solved');
+        if (psEl) psEl.textContent = data.problems_solved ?? '0';
+
+        const srEl = document.getElementById('solve-rate');
+        if (srEl) srEl.textContent = `${data.solve_rate ?? 0}% solve rate`;
+
+        const tsEl = document.getElementById('total-submissions');
+        if (tsEl) tsEl.textContent = data.total_submissions ?? '0';
 
         // Contests
-        document.getElementById('contests-count').textContent = data.contests_count ?? '0';
+        const ccEl = document.getElementById('contests-count');
+        if (ccEl) ccEl.textContent = data.contests_count ?? '0';
+
         if (data.last_contest_date) {
             const d = new Date(data.last_contest_date);
-            document.getElementById('last-contest-text').textContent = `Last contest: ${d.toLocaleDateString()}`;
+            const lcEl = document.getElementById('last-contest-text');
+            if (lcEl) lcEl.innerHTML = `<i class="fa-solid fa-calendar-days text-compass-amber"></i> Last contest: <strong>${d.toLocaleDateString()}</strong>`;
         }
     } catch (err) {
         console.error('Failed to load dashboard summary:', err);
     }
 }
 
-// 2. Rating Progression Line Chart
+// 2. Rating Progression Line Chart (Vibrant Sky Blue & Gradient)
 async function loadRatingChart() {
     try {
         const res = await fetch('/api/contests/?ordering=rating_update_time');
@@ -145,10 +153,10 @@ async function loadRatingChart() {
         if (contests.length === 0) {
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.font = '14px Inter';
-            ctx.fillStyle = '#64748b';
+            ctx.font = 'bold 13px "Work Sans", sans-serif';
+            ctx.fillStyle = '#efbf80';
             ctx.textAlign = 'center';
-            ctx.fillText('No contest history available. Click "Sync Now" above to load data.', canvas.width / 2, 100);
+            ctx.fillText('No contest history available. Click "Sync Now" to load your Codeforces rating history.', canvas.width / 2, canvas.height / 2);
             return;
         }
 
@@ -158,6 +166,12 @@ async function loadRatingChart() {
         });
         const ratings = contests.map(c => c.new_rating);
 
+        const ctx = canvas.getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height || 260);
+        gradient.addColorStop(0, 'rgba(123, 212, 255, 0.35)');
+        gradient.addColorStop(0.7, 'rgba(239, 191, 128, 0.1)');
+        gradient.addColorStop(1, 'rgba(23, 65, 92, 0.0)');
+
         ratingChartInstance = new Chart(canvas, {
             type: 'line',
             data: {
@@ -165,14 +179,17 @@ async function loadRatingChart() {
                 datasets: [{
                     label: 'Rating',
                     data: ratings,
-                    borderColor: '#6366f1',
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                    borderWidth: 2.5,
+                    borderColor: '#7bd4ff',
+                    backgroundColor: gradient,
+                    borderWidth: 3,
                     fill: true,
-                    tension: 0.3,
-                    pointBackgroundColor: '#818cf8',
-                    pointRadius: contests.length > 30 ? 2 : 4,
-                    pointHoverRadius: 6,
+                    tension: 0.25,
+                    pointBackgroundColor: '#f8d7b0',
+                    pointBorderColor: '#392518',
+                    pointBorderWidth: 2,
+                    pointRadius: contests.length > 30 ? 2.5 : 4.5,
+                    pointHoverRadius: 7,
+                    pointHoverBackgroundColor: '#7bd4ff',
                 }]
             },
             options: {
@@ -181,6 +198,12 @@ async function loadRatingChart() {
                 plugins: {
                     legend: { display: false },
                     tooltip: {
+                        backgroundColor: '#17415c',
+                        titleColor: '#f8d7b0',
+                        bodyColor: '#f3f2f2',
+                        borderColor: '#efbf80',
+                        borderWidth: 1.5,
+                        padding: 10,
                         callbacks: {
                             title: (items) => contests[items[0].dataIndex]?.contest_name || '',
                             label: (item) => {
@@ -193,12 +216,12 @@ async function loadRatingChart() {
                 },
                 scales: {
                     x: {
-                        grid: { color: 'rgba(51, 65, 85, 0.3)' },
-                        ticks: { color: '#94a3b8', font: { size: 10 } }
+                        grid: { color: 'rgba(242, 240, 236, 0.06)' },
+                        ticks: { color: '#efbf80', font: { family: '"Work Sans", sans-serif', weight: 'bold', size: 10 } }
                     },
                     y: {
-                        grid: { color: 'rgba(51, 65, 85, 0.3)' },
-                        ticks: { color: '#94a3b8', font: { size: 10 } }
+                        grid: { color: 'rgba(242, 240, 236, 0.06)' },
+                        ticks: { color: '#efbf80', font: { family: '"Work Sans", sans-serif', weight: 'bold', size: 10 } }
                     }
                 }
             }
@@ -208,7 +231,7 @@ async function loadRatingChart() {
     }
 }
 
-// 3. Verdict Doughnut Chart
+// 3. Verdict Doughnut Chart (Coders' Compass Vivid Palette)
 async function loadVerdictChart() {
     try {
         const res = await fetch('/api/analytics/verdicts/');
@@ -223,22 +246,20 @@ async function loadVerdictChart() {
         }
 
         const breakdown = data.breakdown || [];
-        if (breakdown.length === 0) {
-            return;
-        }
+        if (breakdown.length === 0) return;
 
         const colorMap = {
-            'OK': '#10b981',                  // Green
-            'WRONG_ANSWER': '#f43f5e',        // Red
-            'TIME_LIMIT_EXCEEDED': '#f59e0b', // Amber
-            'RUNTIME_ERROR': '#8b5cf6',       // Purple
-            'COMPILATION_ERROR': '#64748b',   // Slate
-            'OTHER': '#38bdf8',               // Sky
+            'OK': '#90ee90',                  // Mint Green
+            'WRONG_ANSWER': '#ff6b6b',        // Coral Red
+            'TIME_LIMIT_EXCEEDED': '#efbf80', // Warm Amber
+            'RUNTIME_ERROR': '#ff90e8',       // Electric Pink
+            'COMPILATION_ERROR': '#c9a0ec',   // Lavender Violet
+            'OTHER': '#7bd4ff',               // Sky Blue
         };
 
         const labels = breakdown.map(b => b.label);
         const counts = breakdown.map(b => b.count);
-        const colors = breakdown.map(b => colorMap[b.key] || '#94a3b8');
+        const colors = breakdown.map(b => colorMap[b.key] || '#f8d7b0');
 
         verdictChartInstance = new Chart(canvas, {
             type: 'doughnut',
@@ -247,8 +268,9 @@ async function loadVerdictChart() {
                 datasets: [{
                     data: counts,
                     backgroundColor: colors,
-                    borderColor: '#0f172a',
-                    borderWidth: 2,
+                    borderColor: '#17415c',
+                    borderWidth: 3,
+                    hoverOffset: 6,
                 }]
             },
             options: {
@@ -257,25 +279,27 @@ async function loadVerdictChart() {
                 plugins: {
                     legend: { display: false }
                 },
-                cutout: '70%'
+                cutout: '65%'
             }
         });
 
         const legendContainer = document.getElementById('verdict-legend');
         if (legendContainer) {
-            legendContainer.innerHTML = breakdown.map(b => `
-                <span class="inline-flex items-center space-x-1 mr-2">
-                    <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${colorMap[b.key] || '#94a3b8'}"></span>
-                    <span>${b.label}: ${b.count} (${b.percentage}%)</span>
-                </span>
-            `).join('');
+            legendContainer.innerHTML = breakdown.map(b => {
+                const c = colorMap[b.key] || '#f8d7b0';
+                return `
+                    <span class="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded text-[11px] font-bold border-2 border-compass-brown shadow-[1px_1px_0px_#0e2433]" style="background-color: ${c}; color: #392518;">
+                        <span>${b.label}: ${b.count} (${b.percentage}%)</span>
+                    </span>
+                `;
+            }).join('');
         }
     } catch (err) {
         console.error('Failed to load verdict chart:', err);
     }
 }
 
-// 4. Difficulty Rating Bar Chart
+// 4. Difficulty Rating Bar Chart (Multi-color Tiers)
 async function loadDifficultyChart() {
     try {
         const res = await fetch('/api/analytics/ratings/');
@@ -292,6 +316,10 @@ async function loadDifficultyChart() {
         const labels = brackets.map(b => b.range);
         const counts = brackets.map(b => b.count);
 
+        // Rotating rainbow bar colors from Coders' Compass
+        const barColors = ['#90ee90', '#7bd4ff', '#efbf80', '#ff90e8', '#c9a0ec', '#f8d7b0'];
+        const assignedColors = brackets.map((_, i) => barColors[i % barColors.length]);
+
         difficultyChartInstance = new Chart(canvas, {
             type: 'bar',
             data: {
@@ -299,24 +327,33 @@ async function loadDifficultyChart() {
                 datasets: [{
                     label: 'Problems Solved',
                     data: counts,
-                    backgroundColor: '#06b6d4',
-                    borderRadius: 6,
+                    backgroundColor: assignedColors,
+                    borderColor: '#392518',
+                    borderWidth: 2,
+                    borderRadius: 4,
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false }
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#17415c',
+                        titleColor: '#f8d7b0',
+                        bodyColor: '#f3f2f2',
+                        borderColor: '#efbf80',
+                        borderWidth: 1.5
+                    }
                 },
                 scales: {
                     x: {
                         grid: { display: false },
-                        ticks: { color: '#94a3b8', font: { size: 10 } }
+                        ticks: { color: '#efbf80', font: { family: '"Work Sans", sans-serif', weight: 'bold', size: 10 } }
                     },
                     y: {
-                        grid: { color: 'rgba(51, 65, 85, 0.3)' },
-                        ticks: { color: '#94a3b8', font: { size: 10 }, stepSize: 1 }
+                        grid: { color: 'rgba(242, 240, 236, 0.06)' },
+                        ticks: { color: '#efbf80', font: { family: '"Work Sans", sans-serif', weight: 'bold', size: 10 }, stepSize: 1 }
                     }
                 }
             }
@@ -326,7 +363,7 @@ async function loadDifficultyChart() {
     }
 }
 
-// 5. Topic-Wise Weak Areas Table
+// 5. Topic-Wise Weak Areas Table with Rotating Rainbow Badges
 async function loadTopics() {
     try {
         const res = await fetch('/api/analytics/topics/');
@@ -338,32 +375,49 @@ async function loadTopics() {
 
         tbody.innerHTML = '';
         if (topics.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-slate-500">No topic data available yet.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-compass-offWhite/60 font-semibold">No topic data available yet. Click "Sync Now" above.</td></tr>`;
             return;
         }
 
-        topics.slice(0, 15).forEach(t => {
+        const tagColorClasses = [
+            'bg-compass-sky text-compass-brown border-compass-brown',
+            'bg-compass-green text-compass-brown border-compass-brown',
+            'bg-compass-amber text-compass-brown border-compass-brown',
+            'bg-compass-pink text-compass-brown border-compass-brown',
+            'bg-compass-violet text-compass-purpleDeep border-compass-purpleDeep',
+            'bg-compass-peach text-compass-brown border-compass-brown'
+        ];
+
+        topics.slice(0, 15).forEach((t, i) => {
             const pct = Math.round(t.solve_rate * 100);
-            let barColor = 'bg-rose-500';
-            if (pct >= 70) barColor = 'bg-emerald-500';
-            else if (pct >= 40) barColor = 'bg-amber-500';
+            let barColor = 'bg-compass-error';
+            let pctColor = 'text-compass-error';
+            if (pct >= 70) {
+                barColor = 'bg-compass-green';
+                pctColor = 'text-compass-green';
+            } else if (pct >= 40) {
+                barColor = 'bg-compass-amber';
+                pctColor = 'text-compass-amber';
+            }
+
+            const tagClass = tagColorClasses[i % tagColorClasses.length];
 
             const row = document.createElement('tr');
-            row.className = 'hover:bg-slate-800/40 transition';
+            row.className = 'hover:bg-compass-navyDeep/60 transition';
             row.innerHTML = `
-                <td class="py-2.5 px-3 font-medium text-slate-200">
-                    <span class="px-2 py-0.5 rounded-md bg-slate-800 text-sky-400 font-mono text-[11px] border border-slate-700/60">
+                <td class="py-2.5 px-3 font-medium">
+                    <span class="inline-block px-2.5 py-0.5 rounded text-[11px] font-extrabold uppercase border-2 shadow-[1px_1px_0px_#0e2433] ${tagClass}">
                         ${t.tag}
                     </span>
                 </td>
-                <td class="py-2.5 px-3 text-slate-300 font-semibold">${t.attempted}</td>
-                <td class="py-2.5 px-3 text-slate-300 font-semibold">${t.solved}</td>
-                <td class="py-2.5 px-3">
-                    <div class="flex items-center space-x-2">
-                        <div class="flex-1 bg-slate-800 rounded-full h-1.5 w-16 overflow-hidden">
-                            <div class="${barColor} h-1.5 rounded-full" style="width: ${pct}%"></div>
+                <td class="py-2.5 px-3 text-center text-compass-offWhite font-bold">${t.attempted}</td>
+                <td class="py-2.5 px-3 text-center text-compass-green font-bold">${t.solved}</td>
+                <td class="py-2.5 px-3 text-right">
+                    <div class="flex items-center justify-end space-x-2">
+                        <div class="bg-compass-navyDarker rounded-full h-2 w-16 overflow-hidden border border-compass-brown/30">
+                            <div class="${barColor} h-2 rounded-full" style="width: ${pct}%"></div>
                         </div>
-                        <span class="font-bold text-[11px] w-9 text-right text-slate-300">${pct}%</span>
+                        <span class="font-extrabold text-xs w-10 text-right ${pctColor}">${pct}%</span>
                     </div>
                 </td>
             `;
@@ -374,7 +428,7 @@ async function loadTopics() {
     }
 }
 
-// 6. Recent Submissions Table
+// 6. Recent Submissions Table with Vivid Neo-Brutalist Verdict Badges
 async function loadRecentSubmissions(verdict = '') {
     try {
         let url = '/api/submissions/recent/?limit=15';
@@ -390,44 +444,44 @@ async function loadRecentSubmissions(verdict = '') {
 
         tbody.innerHTML = '';
         if (submissions.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-slate-500">No submissions matching criteria.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-compass-offWhite/60 font-semibold">No submissions matching criteria.</td></tr>`;
             return;
         }
 
         const verdictStyles = {
-            'OK': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-            'WRONG_ANSWER': 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-            'TIME_LIMIT_EXCEEDED': 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-            'RUNTIME_ERROR': 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-            'COMPILATION_ERROR': 'bg-slate-500/10 text-slate-400 border-slate-500/20',
+            'OK': 'bg-compass-green text-compass-brown border-compass-brown',
+            'WRONG_ANSWER': 'bg-compass-error text-white border-compass-brown',
+            'TIME_LIMIT_EXCEEDED': 'bg-compass-amber text-compass-brown border-compass-brown',
+            'RUNTIME_ERROR': 'bg-compass-pink text-compass-brown border-compass-brown',
+            'COMPILATION_ERROR': 'bg-compass-violet text-compass-purpleDeep border-compass-purpleDeep',
         };
 
         submissions.forEach(s => {
-            const badgeClass = verdictStyles[s.verdict] || 'bg-slate-700 text-slate-300 border-slate-600';
+            const badgeClass = verdictStyles[s.verdict] || 'bg-compass-navyDeep text-compass-offWhite border-compass-brown';
             const problemLink = s.contest_id 
                 ? `https://codeforces.com/contest/${s.contest_id}/problem/${s.problem_index}`
                 : `https://codeforces.com/problemset`;
 
             const row = document.createElement('tr');
-            row.className = 'hover:bg-slate-800/40 transition';
+            row.className = 'hover:bg-compass-navyDeep/60 transition';
             row.innerHTML = `
                 <td class="py-2.5 px-3">
                     <a href="${problemLink}" target="_blank" rel="noopener noreferrer"
-                        class="text-indigo-400 hover:text-indigo-300 font-medium hover:underline flex items-center space-x-1">
+                        class="text-compass-sky hover:text-compass-peach font-bold hover:underline flex items-center space-x-1.5">
                         <span>${s.contest_id || ''}${s.problem_index} - ${s.problem_name || 'Problem'}</span>
                         <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-70"></i>
                     </a>
                 </td>
-                <td class="py-2.5 px-3">
-                    ${s.problem_rating ? `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 border border-slate-700 text-slate-300">${s.problem_rating}</span>` : '—'}
+                <td class="py-2.5 px-3 text-center">
+                    ${s.problem_rating ? `<span class="px-2 py-0.5 rounded text-[11px] font-extrabold bg-compass-amber text-compass-brown border border-compass-brown shadow-[1px_1px_0px_#0e2433]">${s.problem_rating}</span>` : '<span class="text-compass-offWhite/40">-</span>'}
                 </td>
-                <td class="py-2.5 px-3">
-                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${badgeClass}">
+                <td class="py-2.5 px-3 text-center">
+                    <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-extrabold border-2 shadow-[2px_2px_0px_#0e2433] ${badgeClass}">
                         ${s.verdict}
                     </span>
                 </td>
-                <td class="py-2.5 px-3 text-slate-400 text-[11px] font-mono">
-                    ${s.language || '—'}
+                <td class="py-2.5 px-3 text-right text-compass-offWhite/70 text-[11px] font-mono">
+                    ${s.language || '-'}
                 </td>
             `;
             tbody.appendChild(row);
@@ -470,7 +524,13 @@ async function handleSync() {
             body: JSON.stringify({ handle })
         });
 
-        const data = await res.json();
+        const rawText = await res.text();
+        let data = {};
+        try {
+            data = JSON.parse(rawText);
+        } catch (e) {
+            data = { error: `Server response (${res.status}): ${res.statusText || 'Sync error'}` };
+        }
         if (res.ok) {
             showAlert(`Codeforces synced! Created/Updated: ${data.contests_created + data.contests_updated} contests, ${data.problems_created + data.problems_updated} problems, ${data.submissions_created} submissions.`, 'success');
             await refreshAllData();
@@ -497,6 +557,7 @@ async function handleUpdateHandle() {
 
     const btn = document.getElementById('btn-update-handle');
     btn.disabled = true;
+    btn.textContent = 'Saving...';
 
     try {
         const res = await fetch('/api/codeforces/handle/', {
@@ -505,20 +566,28 @@ async function handleUpdateHandle() {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrfToken
             },
-            body: JSON.stringify({ handle, sync: true })
+            body: JSON.stringify({ handle: handle, sync: true })
         });
 
-        const data = await res.json();
+        const rawText = await res.text();
+        let data = {};
+        try {
+            data = JSON.parse(rawText);
+        } catch (e) {
+            data = { error: `Server error (${res.status}): Please check handle format.` };
+        }
+
         if (res.ok) {
-            showAlert(`Handle set to "${handle}" and synchronized successfully!`, 'success');
+            showAlert(`Handle updated to "${handle}" and synced!`, 'success');
             await refreshAllData();
         } else {
-            showAlert(data.error || 'Failed to update handle.', 'error');
+            showAlert(data.error || data.message || `Failed to update handle (Status ${res.status}).`, 'error');
         }
     } catch (err) {
         showAlert(`Error updating handle: ${err.message}`, 'error');
     } finally {
         btn.disabled = false;
+        btn.textContent = 'Save';
     }
 }
 

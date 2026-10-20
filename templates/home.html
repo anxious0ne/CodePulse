@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+
+{% block title %}CodeTrack AI - Competitive Programming Analytics & Tracker{% endblock %}
+
+{% block content %}
+<div class="space-y-16 py-4">
+
+    <!-- Hero Section -->
+    <section class="card-compass p-8 sm:p-12 border-t-8 border-t-compass-sky relative overflow-hidden shadow-brutal-lg">
+        <!-- Background subtle glow & technical badges -->
+        <div class="flex flex-col lg:flex-row items-center justify-between gap-10">
+            
+            <div class="max-w-2xl space-y-6">
+                <!-- Eyebrow Ribbon Tag -->
+                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded bg-compass-peach text-compass-brown border-2 border-compass-brown text-xs font-mono font-extrabold uppercase tracking-wider shadow-[2px_2px_0px_#392518]">
+                    <i class="fa-solid fa-compass"></i>
+                    <span>Coders' Compass Edition &bull; Codeforces Tracker</span>
+                </div>
+
+                <!-- Main Hero Heading -->
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-compass-offWhite tracking-tight leading-none uppercase">
+                    Track Your Coding.<br>
+                    <span class="text-compass-sky">Master</span> The Algorithms.<br>
+                    <span class="text-compass-peach">Climb</span> The Ranks.
+                </h1>
+
+                <!-- Subheading -->
+                <p class="text-base sm:text-lg text-compass-offWhite/80 leading-relaxed font-normal">
+                    CodeTrack AI connects directly to the Codeforces API to turn your raw submissions into 
+                    <strong class="text-compass-amber">rating growth curves</strong>, 
+                    <strong class="text-compass-green">topic mastery heatmaps</strong>, and 
+                    <strong class="text-compass-pink">verdict distributions</strong>.
+                </p>
+
+                <!-- Interactive CTA Button Group -->
+                <div class="pt-2 flex flex-wrap items-center gap-4">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard' %}" class="btn-compass-primary px-6 py-3.5 text-sm uppercase tracking-wider flex items-center space-x-2.5">
+                            <i class="fa-solid fa-gauge-high"></i>
+                            <span>Go to Your Dashboard &rarr;</span>
+                        </a>
+                        <div class="px-4 py-3 rounded bg-compass-navyDeep border-2 border-compass-amber/50 font-mono text-xs flex items-center space-x-2 shadow-inner">
+                            <span class="text-compass-amber font-bold">Welcome back,</span>
+                            <span class="text-compass-peach font-extrabold">{{ user.username }}!</span>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'register-direct' %}" class="btn-compass-primary px-6 py-3.5 text-sm uppercase tracking-wider flex items-center space-x-2">
+                            <i class="fa-solid fa-user-plus"></i>
+                            <span>Create Free Account &rarr;</span>
+                        </a>
+                        <a href="{% url 'login-direct' %}" class="btn-compass-secondary px-6 py-3.5 text-sm uppercase tracking-wider flex items-center space-x-2">
+                            <i class="fa-solid fa-right-to-bracket"></i>
+                            <span>Sign In</span>
+                        </a>
+                    {% endif %}
+                </div>
+
+                <!-- Demo Account Quick Callout -->
+                {% if not user.is_authenticated %}
+                    <div class="pt-2 flex items-center space-x-2 text-xs font-mono text-compass-offWhite/70">
+                        <span class="px-2 py-0.5 rounded bg-compass-amber text-compass-brown font-bold border border-compass-brown">Live Demo:</span>
+                        <span>Log in instantly with <strong class="text-compass-sky">demo_coder</strong> / <strong class="text-compass-sky">coderscompass123</strong></span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Hero Graphic: Geometric Compass Emblem & Live Telemetry -->
+            <div class="flex-shrink-0 flex flex-col items-center">
+                <div class="relative p-8 rounded-2xl bg-compass-navyDeep border-4 border-compass-brown shadow-brutal-peach text-center w-72 sm:w-80 space-y-4">
+                    
+                    <div class="h-24 w-24 mx-auto rounded-full bg-compass-sky border-4 border-compass-brown flex items-center justify-center text-4xl text-compass-brown shadow-[3px_3px_0px_#392518]">
+                        <i class="fa-solid fa-compass animate-spin-slow"></i>
+                    </div>
+
+                    <div>
+                        <h2 class="text-lg font-black text-compass-offWhite uppercase tracking-wide">Codeforces Radar</h2>
+                        <p class="text-xs text-compass-peach font-mono">Realtime Algorithmic Telemetry</p>
+                    </div>
+
+                    <!-- Mini Live Stat Chips inside Badge -->
+                    <div class="grid grid-cols-2 gap-2 text-left font-mono text-xs pt-2">
+                        <div class="p-2 rounded bg-compass-navy border border-compass-sky/40">
+                            <span class="text-[10px] text-compass-sky block font-bold">RATING RANGE</span>
+                            <span class="font-extrabold text-compass-offWhite">800 &ndash; 3500+</span>
+                        </div>
+                        <div class="p-2 rounded bg-compass-navy border border-compass-green/40">
+                            <span class="text-[10px] text-compass-green block font-bold">TOPICS</span>
+                            <span class="font-extrabold text-compass-offWhite">22+ Tags</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Key Stats Preview Strip -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="card-compass p-5 border-t-4 border-t-compass-sky text-center shadow-brutal">
+            <p class="text-3xl font-black text-compass-sky font-mono">20+</p>
+            <p class="text-xs font-bold text-compass-peach uppercase tracking-wider mt-1">Official Contest Rounds</p>
+        </div>
+        <div class="card-compass p-5 border-t-4 border-t-compass-amber text-center shadow-brutal">
+            <p class="text-3xl font-black text-compass-amber font-mono">9 Tiers</p>
+            <p class="text-xs font-bold text-compass-peach uppercase tracking-wider mt-1">Difficulty Brackets</p>
+        </div>
+        <div class="card-compass p-5 border-t-4 border-t-compass-green text-center shadow-brutal">
+            <p class="text-3xl font-black text-compass-green font-mono">22 Tags</p>
+            <p class="text-xs font-bold text-compass-peach uppercase tracking-wider mt-1">Algorithmic Topics</p>
+        </div>
+        <div class="card-compass p-5 border-t-4 border-t-compass-pink text-center shadow-brutal">
+            <p class="text-3xl font-black text-compass-pink font-mono">&lt; 1s</p>
+            <p class="text-xs font-bold text-compass-peach uppercase tracking-wider mt-1">Direct Codeforces Sync</p>
+        </div>
+    </section>
+
+    <!-- Core Features Grid (4 Differentiated Neo-Brutalist Cards) -->
+    <section class="space-y-6">
+        <div class="text-center max-w-xl mx-auto space-y-2">
+            <h2 class="text-3xl font-black text-compass-offWhite uppercase tracking-tight">Everything You Need To Grow</h2>
+            <p class="text-sm text-compass-peach font-semibold">Built specifically for competitive programmers preparing for contests, technical interviews, and online judges.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Feature 1: Rating Progression -->
+            <div class="card-compass p-6 border-t-4 border-t-compass-sky space-y-3 shadow-brutal-lg">
+                <div class="h-10 w-10 rounded bg-compass-sky text-compass-brown border-2 border-compass-brown flex items-center justify-center text-lg font-bold shadow-brutal-sm">
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                </div>
+                <h3 class="text-xl font-extrabold text-compass-offWhite">Official Contest Rating Trajectory</h3>
+                <p class="text-xs text-compass-offWhite/80 leading-relaxed">
+                    Watch your rating trajectory evolve across every rated round. Pinpoint where you jumped from Pupil to Specialist, or Candidate Master to Grandmaster with clean, multi-stop gradient line graphs.
+                </p>
+            </div>
+
+            <!-- Feature 2: Weak Area Discovery -->
+            <div class="card-compass p-6 border-t-4 border-t-compass-green space-y-3 shadow-brutal-lg">
+                <div class="h-10 w-10 rounded bg-compass-green text-compass-brown border-2 border-compass-brown flex items-center justify-center text-lg font-bold shadow-brutal-sm">
+                    <i class="fa-solid fa-tags"></i>
+                </div>
+                <h3 class="text-xl font-extrabold text-compass-offWhite">Topic-Wise Weak Area Discovery</h3>
+                <p class="text-xs text-compass-offWhite/80 leading-relaxed">
+                    Our analytics engine aggregates your solve rate across Dynamic Programming, Graphs, Trees, Math, and Greedy topics. It automatically highlights weak areas so your practice sessions hit maximum ROI.
+                </p>
+            </div>
+
+            <!-- Feature 3: Submissions Breakdown -->
+            <div class="card-compass p-6 border-t-4 border-t-compass-pink space-y-3 shadow-brutal-lg">
+                <div class="h-10 w-10 rounded bg-compass-pink text-compass-brown border-2 border-compass-brown flex items-center justify-center text-lg font-bold shadow-brutal-sm">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </div>
+                <h3 class="text-xl font-extrabold text-compass-offWhite">Verdict & Accuracy Distribution</h3>
+                <p class="text-xs text-compass-offWhite/80 leading-relaxed">
+                    Instantly assess your submission efficiency. See whether Time Limit Exceeded (TLE) or Wrong Answer (WA) is eating away your rating points with colorful neo-brutalist doughnut breakdowns.
+                </p>
+            </div>
+
+            <!-- Feature 4: Difficulty Tier Ladders -->
+            <div class="card-compass p-6 border-t-4 border-t-compass-amber space-y-3 shadow-brutal-lg">
+                <div class="h-10 w-10 rounded bg-compass-amber text-compass-brown border-2 border-compass-brown flex items-center justify-center text-lg font-bold shadow-brutal-sm">
+                    <i class="fa-solid fa-signal"></i>
+                </div>
+                <h3 class="text-xl font-extrabold text-compass-offWhite">Difficulty Ladder Progression</h3>
+                <p class="text-xs text-compass-offWhite/80 leading-relaxed">
+                    Sort your solved problems by rating brackets (800 to 2600+). Measure your confidence as you push through your comfort zone into harder contest problems.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Bottom Call To Action Banner -->
+    <section class="card-compass p-10 border-t-8 border-t-compass-peach text-center space-y-6 shadow-brutal-lg">
+        <div class="max-w-xl mx-auto space-y-3">
+            <h2 class="text-3xl sm:text-4xl font-black text-compass-offWhite uppercase tracking-tight">
+                Ready To Supercharge Your Practice?
+            </h2>
+            <p class="text-sm text-compass-peach font-semibold">
+                Sign in with your account or explore the live demo dashboard today.
+            </p>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="btn-compass-primary px-8 py-3.5 text-sm uppercase tracking-wider font-extrabold shadow-brutal">
+                    Open Your Dashboard &rarr;
+                </a>
+            {% else %}
+                <a href="{% url 'register-direct' %}" class="btn-compass-primary px-8 py-3.5 text-sm uppercase tracking-wider font-extrabold shadow-brutal">
+                    Create Free Account
+                </a>
+                <a href="{% url 'login-direct' %}" class="btn-compass-secondary px-8 py-3.5 text-sm uppercase tracking-wider font-extrabold shadow-brutal">
+                    Sign In
+                </a>
+            {% endif %}
+        </div>
+    </section>
+
+</div>
+{% endblock %}

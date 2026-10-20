@@ -1,0 +1,297 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CodeTrack AI - Competitive Programming Tracker{% endblock %}</title>
+
+    <!-- Google Font: Work Sans (Coders' Compass Primary Font) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700&display=swap" rel="stylesheet">
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Work Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+                    },
+                    colors: {
+                        compass: {
+                            peach: '#f8d7b0',
+                            amber: '#efbf80',
+                            cream: '#f2f0ec',
+                            brown: '#392518',
+                            charcoal: '#333333',
+                            sky: '#7bd4ff',
+                            skyDeep: '#288cbe',
+                            navy: '#17415c',
+                            navyDeep: '#243a45',
+                            navyDarker: '#0e2433',
+                            green: '#90ee90',
+                            greenDeep: '#409540',
+                            pink: '#ff90e8',
+                            pinkDeep: '#ff6fd8',
+                            violet: '#c9a0ec',
+                            purpleDeep: '#39234d',
+                            offWhite: '#f3f2f2',
+                            error: '#ff6b6b',
+                        }
+                    },
+                    boxShadow: {
+                        'brutal-sm': '2px 2px 0px #0e2433',
+                        'brutal': '3px 3px 0px #0e2433',
+                        'brutal-lg': '4px 4px 0px #0e2433',
+                        'brutal-peach': '3px 3px 0px #392518',
+                        'brutal-amber': '3px 3px 0px #392518',
+                        'brutal-sky': '3px 3px 0px #17415c',
+                        'brutal-green': '3px 3px 0px #17415c',
+                        'brutal-pink': '3px 3px 0px #392518',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --color-peach: #f8d7b0;
+            --color-amber: #efbf80;
+            --color-cream: #f2f0ec;
+            --color-brown-dark: #392518;
+            --color-charcoal: #333333;
+            --color-sky: #7bd4ff;
+            --color-sky-deep: #288cbe;
+            --color-navy: #17415c;
+            --color-navy-deep: #243a45;
+            --color-navy-darker: #0e2433;
+            --color-green: #90ee90;
+            --color-green-deep: #409540;
+            --color-pink: #ff90e8;
+            --color-pink-deep: #ff6fd8;
+            --color-violet: #c9a0ec;
+            --color-purple-deep: #39234d;
+            --color-off-white: #f3f2f2;
+            --color-error: #ff6b6b;
+            --button-border-radius: 4px;
+        }
+
+        body {
+            background-color: var(--color-navy-deep);
+            color: var(--color-off-white);
+            font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-image: 
+                linear-gradient(rgba(242, 240, 236, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(242, 240, 236, 0.05) 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+
+        /* Tactile Neo-Brutalist Buttons */
+        .btn-compass-primary {
+            background-color: var(--color-sky);
+            color: var(--color-brown-dark);
+            border: 2px solid var(--color-brown-dark);
+            box-shadow: 3px 3px 0px var(--color-navy-darker);
+            border-radius: var(--button-border-radius);
+            font-weight: 700;
+            transition: all 0.15s ease-in-out;
+        }
+        .btn-compass-primary:hover {
+            background-color: var(--color-sky-deep);
+            color: var(--color-off-white);
+        }
+        .btn-compass-primary:active {
+            transform: translate(1px, 1px);
+            box-shadow: 2px 2px 0px var(--color-navy-darker);
+        }
+
+        .btn-compass-secondary {
+            background-color: var(--color-green);
+            color: var(--color-brown-dark);
+            border: 2px solid var(--color-brown-dark);
+            box-shadow: 3px 3px 0px var(--color-navy-darker);
+            border-radius: var(--button-border-radius);
+            font-weight: 700;
+            transition: all 0.15s ease-in-out;
+        }
+        .btn-compass-secondary:hover {
+            background-color: var(--color-green-deep);
+            color: #ffffff;
+        }
+        .btn-compass-secondary:active {
+            transform: translate(1px, 1px);
+            box-shadow: 2px 2px 0px var(--color-navy-darker);
+        }
+
+        .btn-compass-pink {
+            background-color: var(--color-pink);
+            color: var(--color-brown-dark);
+            border: 2px solid var(--color-brown-dark);
+            box-shadow: 3px 3px 0px var(--color-navy-darker);
+            border-radius: var(--button-border-radius);
+            font-weight: 700;
+            transition: all 0.15s ease-in-out;
+        }
+        .btn-compass-pink:hover {
+            background-color: var(--color-pink-deep);
+            color: #ffffff;
+        }
+
+        .btn-compass-ghost {
+            background-color: var(--color-navy);
+            color: var(--color-off-white);
+            border: 1.5px solid rgba(239, 191, 128, 0.4);
+            box-shadow: 2px 2px 0px var(--color-navy-darker);
+            border-radius: var(--button-border-radius);
+            font-weight: 600;
+            transition: all 0.15s ease-in-out;
+        }
+        .btn-compass-ghost:hover {
+            background-color: #1f4f6e;
+            border-color: var(--color-amber);
+            color: var(--color-peach);
+        }
+
+        /* Tactile Neo-Brutalist Cards */
+        .card-compass {
+            background-color: var(--color-navy);
+            border: 2px solid var(--color-navy-darker);
+            box-shadow: 4px 4px 0px var(--color-navy-darker);
+            border-radius: 6px;
+        }
+
+        /* Scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--color-navy-deep);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--color-navy);
+            border: 1px solid var(--color-brown-dark);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--color-sky-deep);
+        }
+    </style>
+</head>
+<body class="bg-compass-navyDeep text-compass-offWhite min-h-screen flex flex-col font-sans">
+
+    <!-- Top Coders' Compass Vivid Warm Peach Header Bar -->
+    <header class="bg-compass-peach border-b-2 border-compass-brown sticky top-0 z-40 shadow-[0_4px_0_rgba(14,36,51,0.5)]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Brand with Coders Compass Logo Aesthetic -->
+            <div class="flex items-center space-x-6">
+                <a href="{% url 'home' %}" class="flex items-center space-x-3 group">
+                    <span class="inline-flex items-center justify-center h-10 w-10 rounded bg-compass-sky text-compass-brown border-2 border-compass-brown font-mono font-extrabold text-base tracking-wider shadow-[2px_2px_0px_#392518] group-hover:bg-compass-skyDeep group-hover:text-white transition-all transform group-hover:-translate-y-0.5">
+                        <i class="fa-solid fa-compass text-lg"></i>
+                    </span>
+                    <div>
+                        <span class="font-extrabold text-xl text-compass-brown tracking-tight">CodeTrack <span class="text-compass-skyDeep font-normal">AI</span></span>
+                        <span class="hidden sm:inline-block ml-2 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-compass-amber text-compass-brown border border-compass-brown/40 shadow-[1px_1px_0px_#392518]">
+                            Compass Edition
+                        </span>
+                    </div>
+                </a>
+                <nav class="hidden md:flex items-center space-x-4 text-xs font-bold font-mono uppercase tracking-wider text-compass-brown">
+                    <a href="{% url 'home' %}" class="hover:text-compass-skyDeep hover:underline">Home</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard' %}" class="hover:text-compass-skyDeep hover:underline">Dashboard</a>
+                    {% endif %}
+                </nav>
+            </div>
+
+            <!-- Right Actions with Vibrant Buttons -->
+            <div class="flex items-center space-x-3">
+                {% if user.is_authenticated %}
+                    <div class="hidden md:flex items-center space-x-2 text-xs font-semibold text-compass-brown">
+                        <span>Logged in:</span>
+                        <span class="px-2.5 py-1 rounded bg-compass-cream border border-compass-brown/40 text-compass-brown font-bold shadow-[1px_1px_0px_#392518]">
+                            {{ user.username }}
+                        </span>
+                        {% if user.codeforces_handle %}
+                            <span class="px-2.5 py-1 rounded bg-compass-navy text-compass-sky font-mono font-bold border border-compass-brown shadow-[1px_1px_0px_#392518]">
+                                CF: {{ user.codeforces_handle }}
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <a href="{% url 'logout' %}" class="px-3.5 py-1.5 rounded text-xs font-bold bg-compass-cream text-compass-brown border-2 border-compass-brown hover:bg-compass-amber shadow-[2px_2px_0px_#392518] transition-all">
+                        Logout
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="px-3.5 py-1.5 rounded text-xs font-bold text-compass-brown hover:underline">
+                        Sign In
+                    </a>
+                    <a href="{% url 'register' %}" class="btn-compass-primary px-4 py-2 text-xs uppercase tracking-wide">
+                        Get Started
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Coders Compass Amber Breadcrumbs / Ribbon Banner -->
+    <div class="bg-compass-amber border-b-2 border-compass-brown px-4 py-1.5 text-xs font-bold text-compass-brown uppercase tracking-wider flex items-center justify-between shadow-sm">
+        <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <span class="flex items-center space-x-1.5">
+                    <i class="fa-solid fa-layer-group text-compass-brown"></i>
+                    <span>Competitive Programming Analytics</span>
+                </span>
+                <span>/</span>
+                <span class="text-compass-brown/80 font-mono">Realtime Codeforces Sync</span>
+            </div>
+            <div class="hidden md:flex items-center space-x-2 text-[11px] font-mono">
+                <span class="px-2 py-0.5 rounded bg-compass-green text-compass-brown border border-compass-brown font-bold shadow-[1px_1px_0px_#392518]">API Active</span>
+                <span class="px-2 py-0.5 rounded bg-compass-pink text-compass-brown border border-compass-brown font-bold shadow-[1px_1px_0px_#392518]">Neo-Brutalist UI</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Toast / Flash Messages -->
+    <div id="toast-container" class="fixed top-24 right-5 z-50 flex flex-col space-y-2 pointer-events-none">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="pointer-events-auto flex items-center px-4 py-3 rounded text-xs border-2 shadow-brutal font-bold {% if message.tags == 'error' %}bg-compass-error text-white border-compass-brown{% elif message.tags == 'success' %}bg-compass-green text-compass-brown border-compass-brown{% else %}bg-compass-sky text-compass-brown border-compass-brown{% endif %}">
+                    <span>{{ message }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Main View Content -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer with Coders Compass Rich Contrast -->
+    <footer class="bg-compass-navy border-t-2 border-compass-brown py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-compass-offWhite/80">
+            <div class="flex items-center space-x-2">
+                <span class="inline-block w-3 h-3 rounded-full bg-compass-sky"></span>
+                <span>CodeTrack AI &bull; Styled with <strong class="text-compass-peach underline">Coders' Compass</strong> Design System</span>
+            </div>
+            <div class="mt-3 sm:mt-0 flex items-center space-x-3 font-mono text-[11px]">
+                <span class="px-2 py-0.5 rounded bg-compass-peach text-compass-brown border border-compass-brown font-bold">Django REST</span>
+                <span class="px-2 py-0.5 rounded bg-compass-amber text-compass-brown border border-compass-brown font-bold">Codeforces API</span>
+                <span class="px-2 py-0.5 rounded bg-compass-green text-compass-brown border border-compass-brown font-bold">Chart.js 4</span>
+                <span class="px-2 py-0.5 rounded bg-compass-pink text-compass-brown border border-compass-brown font-bold">Tailwind</span>
+            </div>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

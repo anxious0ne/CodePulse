@@ -12,4 +12,4 @@ class Problem(models.Model):
         unique_together = ("contest_id", "problem_index")
 
     def __str__(self):
-        return f"{self.contest_id}{self.problem_index} - {self.name}"
+        return f"{self.contest_id}{self.problem_index} - {self.name}" 

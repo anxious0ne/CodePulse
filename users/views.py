@@ -2,18 +2,37 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from datetime import datetime, timezone, timedelta
 from contests.models import Contest
 from submissions.models import Submission
 from .services import get_cf_rank_info, sync_user_codeforces
 
 
+def home_page(request):
+    """Public front/landing page introducing CodeTrack AI with Login/Signup CTAs."""
+    return render(request, 'home.html', {
+        'user': request.user,
+        'is_authenticated': request.user.is_authenticated,
+    })
+
+
 @login_required
 def dashboard_page(request):
+    # Detect if user is new vs returning
+    is_new = request.session.pop('is_new_user', False)
+    
+    # If not explicitly in session, check if user joined very recently and has no submissions
+    if not is_new and hasattr(request.user, 'date_joined') and request.user.date_joined:
+        time_since_join = datetime.now(timezone.utc) - request.user.date_joined
+        if time_since_join < timedelta(hours=2) and Submission.objects.filter(user=request.user).count() == 0:
+            is_new = True
+
     return render(request, 'dashboard.html', {
         'user': request.user,
         'codeforces_handle': request.user.codeforces_handle or '',
+        'is_new_user': is_new,
     })
 
 
@@ -102,9 +121,27 @@ class UpdateHandleView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        user.codeforces_handle = handle
-        user.is_handle_verified = False
-        user.save(update_fields=['codeforces_handle', 'is_handle_verified'])
+        from django.contrib.auth import get_user_model
+        from django.db import IntegrityError
+        User = get_user_model()
+
+        # Check if handle already taken by another account
+        existing = User.objects.filter(codeforces_handle__iexact=handle).exclude(pk=user.pk).first()
+        if existing:
+            return Response(
+                {"error": f"The handle '{handle}' is already linked to account '{existing.username}'."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            user.codeforces_handle = handle
+            user.is_handle_verified = False
+            user.save(update_fields=['codeforces_handle', 'is_handle_verified'])
+        except IntegrityError:
+            return Response(
+                {"error": f"The handle '{handle}' is already associated with another account."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # Optionally auto-sync if requested
         auto_sync = request.data.get('sync', False)
@@ -122,3 +159,6 @@ class UpdateHandleView(APIView):
                 }, status=status.HTTP_207_MULTI_STATUS)
 
         return Response({"message": f"Codeforces handle updated to {handle}."})
+
+    def put(self, request):
+        return self.post(request)

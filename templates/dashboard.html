@@ -1,299 +1,337 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodePulse — Competitive Programming Dashboard</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <!-- FontAwesome CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-    </style>
-</head>
-<body class="bg-slate-950 text-slate-100 min-h-screen antialiased flex flex-col">
 
-    <!-- CSRF Token for AJAX requests -->
-    {% csrf_token %}
+{% block title %}Dashboard - CodeTrack AI{% endblock %}
 
-    <!-- Top Navigation Bar -->
-    <header class="bg-slate-900/90 backdrop-blur border-b border-slate-800 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-sky-400 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
-                    <i class="fa-solid fa-bolt text-lg"></i>
-                </div>
-                <div>
-                    <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent leading-none">
-                        CodePulse
-                    </h1>
-                    <span class="text-[10px] text-slate-400 tracking-wider uppercase font-semibold">Competitive Tracker</span>
-                </div>
-            </div>
+{% block content %}
+<div class="space-y-6">
 
-            <!-- User Menu -->
-            <div class="flex items-center space-x-4">
-                <div class="hidden sm:flex items-center space-x-2 text-sm text-slate-300 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/60">
-                    <i class="fa-regular fa-user text-slate-400"></i>
-                    <span class="font-medium text-slate-200">{{ user.username }}</span>
-                    {% if user.codeforces_handle %}
-                    <span class="text-xs px-2 py-0.5 rounded-full bg-slate-700 text-sky-400 font-mono">
-                        {{ user.codeforces_handle }}
-                    </span>
-                    {% endif %}
-                </div>
-                <a href="{% url 'logout-direct' %}"
-                    class="inline-flex items-center space-x-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                    <span>Logout</span>
-                </a>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Container -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 space-y-8 w-full">
-
-        <!-- Notification Banner / Toast Container -->
-        <div id="alert-banner" class="hidden transition-all duration-300"></div>
-
-        <!-- Codeforces Integration Card -->
-        <div class="bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <!-- Alert Banner -->
+    <!-- Welcome Banner (New User Welcome vs Returning Welcome Back) -->
+    {% if is_new_user %}
+        <div class="card-compass p-6 border-l-8 border-l-compass-green bg-gradient-to-r from-compass-navy to-[#133526] shadow-brutal-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div class="space-y-1">
-                <div class="flex items-center space-x-3">
-                    <span class="px-2.5 py-0.5 rounded-md text-xs font-bold uppercase tracking-wider bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
-                        Codeforces Sync
-                    </span>
-                    <span id="handle-status-badge" class="text-xs text-slate-400 flex items-center space-x-1">
-                        <!-- Populated by JS -->
-                    </span>
+                <div class="flex items-center space-x-2">
+                    <span class="px-2.5 py-0.5 rounded bg-compass-green text-compass-brown text-xs font-black uppercase font-mono shadow-[1px_1px_0px_#392518]">NEW CODER</span>
+                    <h2 class="text-xl font-extrabold text-compass-offWhite tracking-tight">🎉 Welcome to CodeTrack AI, {{ user.username }}!</h2>
                 </div>
-                <h2 class="text-xl font-bold text-white flex items-center space-x-2">
-                    <span>Active Handle:</span>
-                    <span id="display-handle" class="text-sky-400 font-mono font-semibold">
-                        {{ user.codeforces_handle|default:"None Configured" }}
-                    </span>
-                </h2>
-                <p class="text-xs text-slate-400">
-                    Syncs contest rating progression, topic solve history, and recent submissions directly from Codeforces API.
+                <p class="text-xs text-compass-peach font-medium">
+                    Your competitive programming tracking is now active. Connect your Codeforces handle below and click <strong>Sync Now</strong> to pull in your rating history and problem statistics!
                 </p>
             </div>
-
-            <!-- Sync & Handle Control Form -->
-            <div class="flex flex-wrap items-center gap-3">
-                <div class="relative flex-1 sm:w-60">
-                    <input type="text" id="handle-input" placeholder="Change Codeforces handle"
-                        value="{{ user.codeforces_handle|default:'' }}"
-                        class="w-full pl-3 pr-3 py-2 text-sm bg-slate-900 border border-slate-700 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <a href="#handle-input" onclick="document.getElementById('handle-input').focus();" class="btn-compass-secondary px-4 py-2 text-xs uppercase tracking-wider font-bold whitespace-nowrap">
+                Set Handle &rarr;
+            </a>
+        </div>
+    {% else %}
+        <div class="card-compass p-4 border-l-8 border-l-compass-sky bg-gradient-to-r from-compass-navy to-[#122e42] shadow-brutal flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <span class="h-8 w-8 rounded bg-compass-sky text-compass-brown border-2 border-compass-brown flex items-center justify-center font-bold text-sm shadow-[1px_1px_0px_#392518]">
+                    <i class="fa-solid fa-hand-wave"></i>
+                </span>
+                <div>
+                    <h2 class="text-base font-extrabold text-compass-offWhite">👋 Welcome back, {{ user.username }}!</h2>
+                    <p class="text-xs text-compass-peach font-semibold">Great to see you again. Here are your latest rating trends and solved problem stats.</p>
                 </div>
-                <button id="btn-update-handle"
-                    class="px-4 py-2 text-sm font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center space-x-2">
-                    <i class="fa-solid fa-pen-to-square"></i>
-                    <span>Set Handle</span>
-                </button>
-                <button id="btn-sync"
-                    class="px-5 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-indigo-500 to-sky-500 hover:from-indigo-600 hover:to-sky-600 text-white shadow-lg shadow-indigo-500/20 transition flex items-center space-x-2">
-                    <i id="sync-icon" class="fa-solid fa-arrows-rotate"></i>
-                    <span id="sync-text">Sync Now</span>
-                </button>
+            </div>
+            <div class="flex items-center space-x-2 text-xs font-mono">
+                <span class="text-compass-offWhite/70">Ready to train today?</span>
+            </div>
+        </div>
+    {% endif %}
+    <div id="alert-banner" class="hidden p-4 rounded-lg text-sm flex items-center justify-between border-2 shadow-brutal font-semibold"></div>
+
+    <!-- Top Profile & Action Bar with Vivid Badges & Sync Form -->
+    <div class="card-compass p-6 border-t-4 border-t-compass-sky flex flex-col lg:flex-row lg:items-center justify-between gap-6 shadow-brutal-lg">
+        <div class="flex items-center space-x-4">
+            <!-- Monogram Avatar in Warm Peach -->
+            <div id="profile-avatar" class="h-16 w-16 rounded-lg bg-compass-peach border-2 border-compass-brown flex items-center justify-center text-2xl font-extrabold text-compass-brown font-mono shadow-brutal-peach">
+                {{ user.username|slice:":2"|upper }}
+            </div>
+            <div>
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <h1 class="text-2xl font-extrabold text-compass-offWhite tracking-tight">{{ user.username }}</h1>
+                    <span id="rank-badge" class="px-3 py-1 rounded text-xs font-extrabold uppercase bg-compass-violet text-compass-purpleDeep border-2 border-compass-purpleDeep font-mono shadow-[2px_2px_0px_#39234d]">
+                        Unrated
+                    </span>
+                    <span id="handle-status-badge" class="px-2.5 py-1 rounded text-xs font-bold flex items-center space-x-1.5 bg-compass-green text-compass-brown border-2 border-compass-brown shadow-[2px_2px_0px_#392518]">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Active</span>
+                    </span>
+                </div>
+                <div class="flex flex-wrap items-center gap-3 text-xs text-compass-offWhite/80 mt-2 font-mono">
+                    <span class="flex items-center space-x-1">
+                        <i class="fa-solid fa-user-tag text-compass-sky"></i>
+                        <span>Handle: <strong id="display-handle" class="text-compass-sky font-bold text-sm">{{ user.codeforces_handle|default:"Not configured" }}</strong></span>
+                    </span>
+                    <span>&bull;</span>
+                    <span id="last-contest-text" class="text-compass-amber font-semibold">
+                        <i class="fa-solid fa-calendar-days"></i> Last contest: -
+                    </span>
+                </div>
             </div>
         </div>
 
-        <!-- Metrics KPI Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <!-- Current Rating -->
-            <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 shadow-lg relative overflow-hidden">
-                <div class="flex items-center justify-between text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
+        <!-- Sync & Update Handle Action Controls -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <div class="flex items-center bg-compass-navyDeep border-2 border-compass-amber/50 rounded p-1 shadow-inner">
+                <input
+                    type="text"
+                    id="handle-input"
+                    value="{{ user.codeforces_handle|default:'' }}"
+                    placeholder="Enter Codeforces handle"
+                    class="px-3 py-1.5 bg-transparent text-xs text-compass-offWhite placeholder-compass-offWhite/50 focus:outline-none font-mono w-44"
+                />
+                <button
+                    type="button"
+                    id="btn-update-handle"
+                    class="px-3 py-1.5 rounded text-xs font-bold bg-compass-amber text-compass-brown border border-compass-brown hover:bg-compass-peach shadow-[1px_1px_0px_#392518] transition-all"
+                >
+                    Save
+                </button>
+            </div>
+
+            <button
+                type="button"
+                id="btn-sync"
+                class="btn-compass-primary px-5 py-2.5 text-xs uppercase tracking-wider flex items-center justify-center space-x-2"
+            >
+                <i id="sync-icon" class="fa-solid fa-arrows-rotate text-sm"></i>
+                <span id="sync-text">Sync Now</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 4 Distinct Colorful KPI Metric Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        
+        <!-- 1. Current Rating (Sky Blue Accent) -->
+        <div class="card-compass p-5 border-t-4 border-t-compass-sky flex flex-col justify-between relative overflow-hidden group hover:-translate-y-1 transition-all">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold text-compass-sky uppercase tracking-wider flex items-center space-x-1.5">
+                    <i class="fa-solid fa-chart-line text-sm"></i>
                     <span>Current Rating</span>
-                    <i class="fa-solid fa-ranking-star text-indigo-400 text-base"></i>
-                </div>
-                <div class="flex items-baseline space-x-3">
-                    <span id="current-rating" class="text-3xl font-extrabold text-white">—</span>
-                    <span id="rank-badge" class="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700">—</span>
-                </div>
-                <div class="mt-2 text-xs text-slate-400 flex items-center space-x-1" id="rating-delta-container">
-                    <span id="rating-delta">—</span>
+                </span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-compass-sky text-compass-brown border border-compass-brown shadow-[1px_1px_0px_#392518]">
+                    LIVE
+                </span>
+            </div>
+            <div>
+                <p id="current-rating" class="text-4xl font-extrabold text-compass-sky font-mono tracking-tight">-</p>
+                <div id="rating-delta-container" class="mt-2 text-xs font-mono">
+                    <span class="text-compass-offWhite/60">No contest data</span>
                 </div>
             </div>
+        </div>
 
-            <!-- Peak Rating -->
-            <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 shadow-lg relative overflow-hidden">
-                <div class="flex items-center justify-between text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
+        <!-- 2. Peak Rating (Warm Amber Accent) -->
+        <div class="card-compass p-5 border-t-4 border-t-compass-amber flex flex-col justify-between relative overflow-hidden group hover:-translate-y-1 transition-all">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold text-compass-amber uppercase tracking-wider flex items-center space-x-1.5">
+                    <i class="fa-solid fa-trophy text-sm"></i>
                     <span>Peak Rating</span>
-                    <i class="fa-solid fa-crown text-amber-400 text-base"></i>
-                </div>
-                <div class="flex items-baseline space-x-3">
-                    <span id="max-rating" class="text-3xl font-extrabold text-white">—</span>
-                    <span id="max-rank-badge" class="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700">—</span>
-                </div>
-                <div class="mt-2 text-xs text-slate-400">
-                    Highest career milestone
+                </span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-compass-amber text-compass-brown border border-compass-brown shadow-[1px_1px_0px_#392518]">
+                    ALL-TIME
+                </span>
+            </div>
+            <div>
+                <p id="max-rating" class="text-4xl font-extrabold text-compass-amber font-mono tracking-tight">-</p>
+                <div class="mt-2 text-xs font-mono flex items-center space-x-1.5">
+                    <span id="max-rank-badge" class="px-2 py-0.5 rounded text-[11px] font-bold bg-compass-navyDeep text-compass-amber border border-compass-amber/40">
+                        Max: -
+                    </span>
                 </div>
             </div>
+        </div>
 
-            <!-- Problems Solved -->
-            <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 shadow-lg relative overflow-hidden">
-                <div class="flex items-center justify-between text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
+        <!-- 3. Problems Solved (Mint Green Accent) -->
+        <div class="card-compass p-5 border-t-4 border-t-compass-green flex flex-col justify-between relative overflow-hidden group hover:-translate-y-1 transition-all">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold text-compass-green uppercase tracking-wider flex items-center space-x-1.5">
+                    <i class="fa-solid fa-circle-check text-sm"></i>
                     <span>Problems Solved</span>
-                    <i class="fa-solid fa-check-double text-emerald-400 text-base"></i>
-                </div>
-                <div class="flex items-baseline space-x-3">
-                    <span id="problems-solved" class="text-3xl font-extrabold text-white">—</span>
-                    <span id="solve-rate" class="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">—% rate</span>
-                </div>
-                <div class="mt-2 text-xs text-slate-400">
-                    <span id="total-submissions">—</span> total submissions
-                </div>
+                </span>
+                <span id="solve-rate" class="px-2 py-0.5 rounded text-[10px] font-bold bg-compass-green text-compass-brown border border-compass-brown shadow-[1px_1px_0px_#392518]">
+                    0% rate
+                </span>
             </div>
-
-            <!-- Contests Count -->
-            <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 shadow-lg relative overflow-hidden">
-                <div class="flex items-center justify-between text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
-                    <span>Contests Attended</span>
-                    <i class="fa-solid fa-trophy text-sky-400 text-base"></i>
-                </div>
-                <div class="flex items-baseline space-x-3">
-                    <span id="contests-count" class="text-3xl font-extrabold text-white">—</span>
-                    <span class="text-xs font-semibold text-slate-400">rated rounds</span>
-                </div>
-                <div class="mt-2 text-xs text-slate-400" id="last-contest-text">
-                    Last active: —
+            <div>
+                <p id="problems-solved" class="text-4xl font-extrabold text-compass-green font-mono tracking-tight">-</p>
+                <div class="mt-2 text-xs text-compass-offWhite/70 font-mono">
+                    <span class="text-compass-green font-bold">Distinct</span> problems solved
                 </div>
             </div>
         </div>
 
-        <!-- Charts Section (Grid: Rating Progression + Verdict Breakdown) -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Rating Progression Chart (Span 2) -->
-            <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-base font-bold text-white flex items-center space-x-2">
-                            <i class="fa-solid fa-chart-line text-indigo-400"></i>
-                            <span>Rating History</span>
-                        </h3>
-                        <p class="text-xs text-slate-400">Progression across competitive rounds</p>
-                    </div>
-                </div>
-                <div class="relative w-full h-72">
-                    <canvas id="ratingChart"></canvas>
-                </div>
+        <!-- 4. Contests & Activity (Electric Pink Accent) -->
+        <div class="card-compass p-5 border-t-4 border-t-compass-pink flex flex-col justify-between relative overflow-hidden group hover:-translate-y-1 transition-all">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold text-compass-pink uppercase tracking-wider flex items-center space-x-1.5">
+                    <i class="fa-solid fa-flag-checkered text-sm"></i>
+                    <span>Contests & Activity</span>
+                </span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-compass-pink text-compass-brown border border-compass-brown shadow-[1px_1px_0px_#392518]">
+                    ROUNDS
+                </span>
             </div>
-
-            <!-- Verdict Distribution (Span 1) -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4 flex flex-col justify-between">
-                <div>
-                    <h3 class="text-base font-bold text-white flex items-center space-x-2">
-                        <i class="fa-solid fa-chart-pie text-sky-400"></i>
-                        <span>Verdict Distribution</span>
-                    </h3>
-                    <p class="text-xs text-slate-400">Submission verdict accuracy breakdown</p>
-                </div>
-                <div class="relative w-full h-60 flex items-center justify-center">
-                    <canvas id="verdictChart"></canvas>
-                </div>
-                <div id="verdict-legend" class="text-xs text-slate-400 pt-2 border-t border-slate-800/80 flex flex-wrap gap-2 justify-center">
-                    <!-- Populated by JS -->
+            <div>
+                <p id="contests-count" class="text-4xl font-extrabold text-compass-pink font-mono tracking-tight">-</p>
+                <div class="mt-2 text-xs text-compass-offWhite/70 font-mono flex items-center space-x-1">
+                    <span class="text-compass-pink font-bold" id="total-submissions">0</span>
+                    <span>total submissions</span>
                 </div>
             </div>
         </div>
 
-        <!-- Problem Difficulty Rating Distribution Chart -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-            <div class="flex items-center justify-between">
+    </div>
+
+    <!-- Charts Row 1: Rating Progression (Sky Blue) & Verdicts (Rainbow Doughnut) -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Rating Progression Chart (2 Columns) -->
+        <div class="lg:col-span-2 card-compass p-6 border-t-4 border-t-compass-sky shadow-brutal-lg">
+            <div class="flex items-center justify-between mb-4">
                 <div>
-                    <h3 class="text-base font-bold text-white flex items-center space-x-2">
-                        <i class="fa-solid fa-layer-group text-emerald-400"></i>
-                        <span>Problems Solved by Difficulty Rating</span>
-                    </h3>
-                    <p class="text-xs text-slate-400">Number of accepted problems categorized into Codeforces rating brackets</p>
+                    <h2 class="text-lg font-extrabold text-compass-offWhite flex items-center space-x-2">
+                        <i class="fa-solid fa-arrow-trend-up text-compass-sky"></i>
+                        <span>Rating Progression</span>
+                    </h2>
+                    <p class="text-xs text-compass-peach font-semibold">Official Codeforces contest trajectory</p>
                 </div>
+                <span class="text-xs font-mono font-bold text-compass-brown bg-compass-amber px-3 py-1 rounded border-2 border-compass-brown shadow-brutal-sm">
+                    Rated Contests
+                </span>
             </div>
-            <div class="relative w-full h-64">
+            <div class="relative h-72">
+                <canvas id="ratingChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Verdict Distribution Doughnut (1 Column) -->
+        <div class="card-compass p-6 border-t-4 border-t-compass-pink shadow-brutal-lg flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="text-lg font-extrabold text-compass-offWhite flex items-center space-x-2">
+                        <i class="fa-solid fa-chart-pie text-compass-pink"></i>
+                        <span>Submissions Verdicts</span>
+                    </h2>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-compass-pink text-compass-brown border border-compass-brown">
+                        ALL TIME
+                    </span>
+                </div>
+                <p class="text-xs text-compass-peach font-semibold mb-4">Distribution across all attempted solutions</p>
+            </div>
+            <div class="relative h-56 flex items-center justify-center">
+                <canvas id="verdictChart"></canvas>
+            </div>
+            <div id="verdict-legend" class="mt-4 flex flex-wrap gap-2 text-xs font-mono justify-center"></div>
+        </div>
+    </div>
+
+    <!-- Charts Row 2: Weak Areas & Problem Difficulty Distribution -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Topic Analytics & Weak Areas -->
+        <div class="card-compass p-6 border-t-4 border-t-compass-green shadow-brutal-lg flex flex-col">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h2 class="text-lg font-extrabold text-compass-offWhite flex items-center space-x-2">
+                        <i class="fa-solid fa-tags text-compass-green"></i>
+                        <span>Topic Performance & Weak Areas</span>
+                    </h2>
+                    <p class="text-xs text-compass-peach font-semibold">Tags sorted by solve efficiency</p>
+                </div>
+                <span class="text-xs font-mono font-bold px-2.5 py-1 rounded bg-compass-green text-compass-brown border border-compass-brown shadow-brutal-sm">
+                    Top 15 Tags
+                </span>
+            </div>
+
+            <div class="overflow-y-auto max-h-80 border-2 border-compass-brown rounded-lg shadow-inner">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-compass-peach text-compass-brown uppercase font-extrabold sticky top-0 border-b-2 border-compass-brown">
+                        <tr>
+                            <th class="py-2.5 px-3">Topic Tag</th>
+                            <th class="py-2.5 px-3 text-center">Attempted</th>
+                            <th class="py-2.5 px-3 text-center">Solved</th>
+                            <th class="py-2.5 px-3 text-right">Solve Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topics-body" class="divide-y divide-compass-amber/20 bg-compass-navy text-compass-offWhite font-mono">
+                        <tr>
+                            <td colspan="4" class="py-6 text-center text-compass-offWhite/50">Loading topic analytics...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Problem Difficulty Distribution Bar Chart -->
+        <div class="card-compass p-6 border-t-4 border-t-compass-amber shadow-brutal-lg flex flex-col">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h2 class="text-lg font-extrabold text-compass-offWhite flex items-center space-x-2">
+                        <i class="fa-solid fa-signal text-compass-amber"></i>
+                        <span>Solved by Difficulty</span>
+                    </h2>
+                    <p class="text-xs text-compass-peach font-semibold">Distribution of solved problems by rating tier</p>
+                </div>
+                <span class="text-xs font-mono font-bold px-2.5 py-1 rounded bg-compass-amber text-compass-brown border border-compass-brown shadow-brutal-sm">
+                    Rating Tiers
+                </span>
+            </div>
+            <div class="relative flex-1 min-h-[280px]">
                 <canvas id="difficultyChart"></canvas>
             </div>
         </div>
+    </div>
 
-        <!-- Tables Section: Weak Topics & Recent Submissions -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Topic-Wise Weak Areas -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-base font-bold text-white flex items-center space-x-2">
-                            <i class="fa-solid fa-bullseye text-rose-400"></i>
-                            <span>Topic-wise Weak Areas</span>
-                        </h3>
-                        <p class="text-xs text-slate-400">Topics prioritized by lowest solve rate</p>
-                    </div>
-                </div>
-                <div class="overflow-x-auto max-h-96">
-                    <table class="w-full text-left text-xs text-slate-300">
-                        <thead class="text-[11px] uppercase tracking-wider text-slate-400 bg-slate-950/60 sticky top-0">
-                            <tr class="border-b border-slate-800">
-                                <th class="py-2.5 px-3">Tag / Topic</th>
-                                <th class="py-2.5 px-3">Attempted</th>
-                                <th class="py-2.5 px-3">Solved</th>
-                                <th class="py-2.5 px-3">Solve Rate</th>
-                            </tr>
-                        </thead>
-                        <tbody id="topics-body" class="divide-y divide-slate-800/60">
-                            <!-- Populated by JS -->
-                        </tbody>
-                    </table>
-                </div>
+    <!-- Recent Submissions Table with Filter & Colorful Badges -->
+    <div class="card-compass p-6 border-t-4 border-t-compass-violet shadow-brutal-lg">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+            <div>
+                <h2 class="text-lg font-extrabold text-compass-offWhite flex items-center space-x-2">
+                    <i class="fa-solid fa-clock-rotate-left text-compass-violet"></i>
+                    <span>Recent Submissions</span>
+                </h2>
+                <p class="text-xs text-compass-peach font-semibold">Latest evaluations directly from Codeforces</p>
             </div>
-
-            <!-- Recent Submissions Feed -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-base font-bold text-white flex items-center space-x-2">
-                            <i class="fa-solid fa-clock-rotate-left text-indigo-400"></i>
-                            <span>Recent Submissions</span>
-                        </h3>
-                        <p class="text-xs text-slate-400">Latest problem submissions and verdicts</p>
-                    </div>
-                    <!-- Verdict filter dropdown -->
-                    <select id="submission-verdict-filter"
-                        class="bg-slate-950 border border-slate-800 rounded-lg text-xs px-2.5 py-1 text-slate-300 focus:outline-none">
-                        <option value="">All Verdicts</option>
-                        <option value="OK">Accepted (OK)</option>
-                        <option value="WRONG_ANSWER">Wrong Answer</option>
-                        <option value="TIME_LIMIT_EXCEEDED">TLE</option>
-                    </select>
-                </div>
-                <div class="overflow-x-auto max-h-96">
-                    <table class="w-full text-left text-xs text-slate-300">
-                        <thead class="text-[11px] uppercase tracking-wider text-slate-400 bg-slate-950/60 sticky top-0">
-                            <tr class="border-b border-slate-800">
-                                <th class="py-2.5 px-3">Problem</th>
-                                <th class="py-2.5 px-3">Rating</th>
-                                <th class="py-2.5 px-3">Verdict</th>
-                                <th class="py-2.5 px-3">Language</th>
-                            </tr>
-                        </thead>
-                        <tbody id="submissions-body" class="divide-y divide-slate-800/60">
-                            <!-- Populated by JS -->
-                        </tbody>
-                    </table>
-                </div>
+            
+            <!-- Verdict Filter Dropdown -->
+            <div class="flex items-center space-x-2">
+                <label for="submission-verdict-filter" class="text-xs font-bold text-compass-peach uppercase font-mono">Filter:</label>
+                <select id="submission-verdict-filter" class="px-3 py-1.5 bg-compass-peach text-compass-brown font-bold text-xs rounded border-2 border-compass-brown shadow-brutal-sm focus:outline-none">
+                    <option value="">All Verdicts</option>
+                    <option value="OK">Accepted (OK)</option>
+                    <option value="WRONG_ANSWER">Wrong Answer</option>
+                    <option value="TIME_LIMIT_EXCEEDED">Time Limit</option>
+                    <option value="RUNTIME_ERROR">Runtime Error</option>
+                    <option value="COMPILATION_ERROR">Compilation Error</option>
+                </select>
             </div>
         </div>
 
-    </main>
+        <div class="overflow-x-auto max-h-96 border-2 border-compass-brown rounded-lg shadow-inner">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-compass-peach text-compass-brown uppercase font-extrabold sticky top-0 border-b-2 border-compass-brown">
+                    <tr>
+                        <th class="py-2.5 px-3">Problem</th>
+                        <th class="py-2.5 px-3 text-center">Difficulty</th>
+                        <th class="py-2.5 px-3 text-center">Verdict</th>
+                        <th class="py-2.5 px-3 text-right">Language</th>
+                    </tr>
+                </thead>
+                <tbody id="submissions-body" class="divide-y divide-compass-amber/20 bg-compass-navy text-compass-offWhite font-mono">
+                    <tr>
+                        <td colspan="4" class="py-6 text-center text-compass-offWhite/50">Loading recent submissions...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    <!-- Footer -->
-    <footer class="bg-slate-900/60 border-t border-slate-800 py-6 text-center text-xs text-slate-500">
-        <p>CodePulse &copy; 2026 — Built with Django, DRF, MySQL & Codeforces API.</p>
-    </footer>
+</div>
+{% endblock %}
 
-    <!-- Scripts -->
-    <script src="{% static 'js/dashboard.js' %}"></script>
-</body>
-</html>
+{% block extra_js %}
+<script src="{% static 'js/dashboard.js' %}"></script>
+{% endblock %}
